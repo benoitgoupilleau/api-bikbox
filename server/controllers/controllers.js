@@ -6,5 +6,9 @@ var users = require('./users');
 router.use(express.static('public'));
 router.use(users);
 
+router.get('/', async (req, res) => {
+  res.status(200).send('Hello')
+});
+
 
 module.exports = router;
