@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 
-var {User}= require('./../models/user');
+var { User }= require('./../models/user');
 var {authenticate}= require('./../middleware/authenticate');
 var {transporter, resetEmail, passwordchangedEmail} = require('./../email/mailconfig');
 
