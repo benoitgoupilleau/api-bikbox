@@ -31,7 +31,7 @@ route.post('/users/update', authenticate, async (req, res)=>{
     var passwordchanged = false;
     bcrypt.compare(body.password, user.password, (err, res)=>{
       if (!res) {
-        bcrypt.genSalt(12,(err, salt)=>{
+        bcrypt.genSalt(process.env.TOKEN.SALT_ROUNDS,(err, salt)=>{
           if(err){return next(err)}
           bcrypt.hash(body.password, salt, (err, hash)=>{
             if (err) {return next(err)}
@@ -113,7 +113,7 @@ route.post('/users/verify', (req, res)=>{
 })
 
 route.get('/users/verify/:token', (req, res)=>{
-  jwt.verify(req.params.token, process.env.JWT_SECRET_EMAIL, (err, decoded)=>{
+  jwt.verify(req.params.token, process.env.TOKEN.JWT_SECRET_EMAIL, (err, decoded)=>{
     if(err){
       return res.status(400).send(err.message)
     }
@@ -147,7 +147,7 @@ route.post('/users/forgot', async (req, res)=>{
 });
 
 route.get('/users/reset/:token', (req, res)=>{
-  jwt.verify(req.params.token, process.env.JWT_SECRET_PASSWORD, (err, decoded)=>{
+  jwt.verify(req.params.token, process.env.TOKEN.JWT_SECRET_PASSWORD, (err, decoded)=>{
     if(err){
       return res.status(400).send(err.message)
     }
@@ -157,7 +157,7 @@ route.get('/users/reset/:token', (req, res)=>{
 
 route.post('/users/reset/:token', (req, res)=>{
   const password = _.pick(req.body, ['password']).password;
-  jwt.verify(req.params.token, process.env.JWT_SECRET_PASSWORD, (err, decoded)=>{
+  jwt.verify(req.params.token, process.env.TOKEN.JWT_SECRET_PASSWORD, (err, decoded)=>{
     if(err){
       return res.status(400).send(err.message)
     }

@@ -5,18 +5,18 @@ var verifyemailContent = require('./content/verifyEmail');
 var verifynewemailContent = require('./content/verifynewEmail');
 
 var transporter = nodemailer.createTransport({
-    service: 'SSL0.OVH.NET',
-    host: 'SSL0.OVH.NET',
-    port: 465,
-    secure: true, // secure:true for port 465, secure:false for port 587
-    auth: {
-        user: 'techno@bikbox.com',
-        pass: process.env.EMAIL_PASSWORD
-    },
-    starttls: {
-      enable: true
-    },
-    secureConnection: true
+  service: process.env.SMTP.SERVICE,
+  host: process.env.SMTP.HOST,
+  port: process.env.SMTP.PORT,
+  secure: process.env.SMTP.SECURE, // secure:true for port 465, secure:false for port 587
+  auth: {
+    user: process.env.SMTP.AUTH_USER,
+    pass: process.env.SMTP.AUTH_PASSWORD
+  },
+  starttls: {
+    enable: process.env.SMTP.STARTTLS
+  },
+  secureConnection: process.env.SMTP.SECURE_CONNECTION
 });
 
 var verifyEmail = (user, url)=>{

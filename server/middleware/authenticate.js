@@ -1,9 +1,9 @@
-var {User} = require('./../models/user');
+const { User } = require('./../models/user');
 
-var authenticate = (req, res,next)=>{
-  var token = req.header('x-auth');
+const authenticate = (req, res,next) => {
+  const token = req.header('x-auth');
 
-  User.findByToken(token).then((user)=>{
+  User.findByToken(token, 'user').then((user) => {
     if (!user) {
       return Promise.reject();
     }
@@ -15,4 +15,38 @@ var authenticate = (req, res,next)=>{
   });
 };
 
-module.exports = {authenticate};
+const authenticateAdmin = (req, res, next) => {
+  const token = req.header('x-auth');
+
+  User.findByToken(token, 'admin').then((user) => {
+    if (!user) {
+      return Promise.reject();
+    }
+    req.user = user;
+    req.token = token;
+    next();
+  }).catch((e) => {
+    res.status(e).send();
+  });
+};
+
+const authenticateEntityManager = (req, res, next) => {
+  const token = req.header('x-auth');
+
+  User.findByToken(token, 'entityManager').then((user) => {
+    if (!user) {
+      return Promise.reject();
+    }
+    req.user = user;
+    req.token = token;
+    next();
+  }).catch((e) => {
+    res.status(e).send();
+  });
+};
+
+const authenticateSensor = (req, res, next) => {
+  next();
+};
+
+module.exports = { authenticate, authenticateEntityManager, authenticateAdmin, authenticateSensor };

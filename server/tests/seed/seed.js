@@ -18,7 +18,7 @@ const users= [{
   billing: 'Free',
   tokens:[{
     access: 'auth',
-    token: jwt.sign({_id: userOneId, access: 'auth'}, process.env.JWT_SECRET).toString(),
+    token: jwt.sign({_id: userOneId, access: 'auth'}, process.env.TOKEN.JWT_SECRET_TOKEN).toString(),
     tokendate: moment().add(7,'d').valueOf()
   }]
 },{
@@ -31,7 +31,7 @@ const users= [{
   billing: 'Free',
   tokens:[{
     access: 'auth',
-    token: jwt.sign({_id: userTwoId, access: 'auth'}, process.env.JWT_SECRET).toString(),
+    token: jwt.sign({_id: userTwoId, access: 'auth'}, process.env.TOKEN.JWT_SECRET_TOKEN).toString(),
     tokendate: moment().add(7,'d').valueOf()
   }]
 },{
@@ -44,7 +44,7 @@ const users= [{
   billing: 'Free',
   tokens:[{
     access: 'auth',
-    token: jwt.sign({_id: userThreeId, access: 'auth'}, process.env.JWT_SECRET).toString(),
+    token: jwt.sign({_id: userThreeId, access: 'auth'}, process.env.TOKEN.JWT_SECRET_TOKEN).toString(),
     tokendate: moment().add(7,'d').valueOf()
   }]
 }];

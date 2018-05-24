@@ -7,7 +7,7 @@ router.use(express.static('public'));
 router.use(users);
 
 router.get('/', async (req, res) => {
-  res.status(200).send('Hello')
+  res.status(200).send(`Hello from the API BikBox ${JSON.stringify(req.hostname)}`)
 });
 
 
