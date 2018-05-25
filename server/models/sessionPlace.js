@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const SessionPlace = mongoose.model('SessionPlace', {
   _sensor: {
@@ -16,4 +16,4 @@ const SessionPlace = mongoose.model('SessionPlace', {
   }
 });
 
-module.exports = { SessionPlace };
+export default SessionPlace;

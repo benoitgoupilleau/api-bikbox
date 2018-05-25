@@ -1,7 +1,8 @@
-var express = require('express');
-var router = express.Router();
+import express from 'express';
 
-var users = require('./users');
+import users from './users';
+
+const router = express.Router();
 
 router.use(express.static('public'));
 router.use(users);
@@ -11,4 +12,4 @@ router.get('/', async (req, res) => {
 });
 
 
-module.exports = router;
+export default router;

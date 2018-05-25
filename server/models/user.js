@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
-const moment = require('moment');
-const jwt = require('jsonwebtoken');
-const _ = require('lodash');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import moment from 'moment';
+import jwt from 'jsonwebtoken';
+import _ from 'lodash';
+import bcrypt from 'bcryptjs';
 
-const { transporter, verifyEmail, verifyNewEmail } = require('./../email/mailconfig');
+import { transporter, verifyEmail, verifyNewEmail } from './../email/mailconfig';
 
 
 const UserSchema= new mongoose.Schema({
@@ -54,31 +54,29 @@ UserSchema.methods.toJSON = () => {
   return _.pick(userObject, ['_id', 'userType'])
 };
 
-UserSchema.methods.generateAuthToken = async function () {
-  const user = this;
+UserSchema.methods.generateAuthToken = async () => {
   const access = 'auth';
-  const token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.TOKEN.JWT_SECRET_TOKEN, { expiresIn: process.env.TOKEN.DURATION_TOKEN }).toString();
+  const token = jwt.sign({ _id: this._id.toHexString(), access }, process.env.TOKEN.JWT_SECRET_TOKEN, { expiresIn: process.env.TOKEN.DURATION_TOKEN }).toString();
 
-  user.tokens.push({ access, token });
-  await user.save();
+  this.tokens.push({ access, token });
+  await this.save();
   return { token };
 };
 
-UserSchema.methods.verifyEmailtoken = function (newEmail) {
-  const user= this;
+UserSchema.methods.verifyEmailtoken = (newEmail) => {
   const access = 'verifyemail';
-  const token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.TOKEN.JWT_SECRET_EMAIL, { expiresIn: process.env.TOKEN.DURATION_EMAIL }).toString()
+  const token = jwt.sign({ _id: this._id.toHexString(), access }, process.env.TOKEN.JWT_SECRET_EMAIL, { expiresIn: process.env.TOKEN.DURATION_EMAIL }).toString()
 
   const url = `${process.env.SERVER_URL}users/verify/${token}`;
   if(newEmail){
-    transporter.sendMail(verifyNewEmail(user, url), (err, info)=>{
+    transporter.sendMail(verifyNewEmail(this, url), (err, info)=>{
       if(err){
         return Promise.reject(502);
       }
       return Promise.resolve();
     })
   } else {
-    transporter.sendMail(verifyEmail(user, url), (err, info)=>{
+    transporter.sendMail(verifyEmail(this, url), (err, info)=>{
       if(err){
         return Promise.reject(502);
       }
@@ -87,17 +85,16 @@ UserSchema.methods.verifyEmailtoken = function (newEmail) {
   }
 };
 
-UserSchema.methods.updateToken = async function (token) {
-  const user= this;
+UserSchema.methods.updateToken = async (token) => {
   const access = 'auth';
-  const newtoken = jwt.sign({ _id: user._id.toHexString(), access }, process.env.TOKEN.JWT_SECRET_TOKEN, { expiresIn: process.env.TOKEN.DURATION_TOKEN }).toString();
+  const newtoken = jwt.sign({ _id: this._id.toHexString(), access }, process.env.TOKEN.JWT_SECRET_TOKEN, { expiresIn: process.env.TOKEN.DURATION_TOKEN }).toString();
 
-  user.tokens.find((data) => {
+  this.tokens.find((data) => {
     if(data.token === token){
       data.token = newtoken;
     }
   });
-  await user.save();
+  await this.save();
   return { token: newtoken };
 };
 
@@ -108,18 +105,17 @@ UserSchema.methods.removeToken = (token) =>
     }
 });
 
-UserSchema.methods.generatePasswordToken = async function () {
+UserSchema.methods.generatePasswordToken = async () => {
   const user = this;
   const access = 'password';
-  const token =jwt.sign({ _id: user._id.toHexString(), access }, process.env.TOKEN.JWT_SECRET_PASSWORD, { expiresIn: process.env.TOKEN.DURATION_PASSWORD }).toString()
+  const token =jwt.sign({ _id: this._id.toHexString(), access }, process.env.TOKEN.JWT_SECRET_PASSWORD, { expiresIn: process.env.TOKEN.DURATION_PASSWORD }).toString()
 
-  user.resetpasswordtoken = true;
-  await user.save();
+  this.resetpasswordtoken = true;
+  await this.save();
   return token;
 };
 
 UserSchema.statics.findByToken = function (token, userType){
-  const User = this;
   let decoded;
 
   try {
@@ -128,7 +124,7 @@ UserSchema.statics.findByToken = function (token, userType){
     return Promise.reject(400);
   }
 
-  return User.findOne({
+  return this.findOne({
     '_id': decoded._id,
     'tokens.token': token,
     'tokens.access': 'auth',
@@ -141,6 +137,6 @@ UserSchema.statics.findByToken = function (token, userType){
   });
 };
 
-var User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
 
-module.exports={User};
+export default User;

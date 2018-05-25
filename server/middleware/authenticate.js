@@ -1,4 +1,4 @@
-const { User } = require('./../models/user');
+import User from './../models/user';
 
 const authenticate = (req, res,next) => {
   const token = req.header('x-auth');
@@ -49,4 +49,4 @@ const authenticateSensor = (req, res, next) => {
   next();
 };
 
-module.exports = { authenticate, authenticateEntityManager, authenticateAdmin, authenticateSensor };
+export { authenticate, authenticateEntityManager, authenticateAdmin, authenticateSensor };

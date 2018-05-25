@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Bike = mongoose.model('Bike', {
   identifier: {
@@ -22,4 +22,4 @@ const Bike = mongoose.model('Bike', {
   }
 });
 
-module.exports = { Bike };
+export default Bike;

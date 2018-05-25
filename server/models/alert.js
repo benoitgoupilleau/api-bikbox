@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Alert = mongoose.model('Alert', {
   name: {
@@ -26,4 +26,4 @@ const Alert = mongoose.model('Alert', {
   }
 });
 
-module.exports = { Alert };
+export default Alert;

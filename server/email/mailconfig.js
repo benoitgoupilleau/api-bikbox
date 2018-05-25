@@ -1,10 +1,10 @@
-const nodemailer= require('nodemailer');
-var resetmailContent = require('./content/resetEmail');
-var passupdatemailContent = require('./content/passupdateEmail');
-var verifyemailContent = require('./content/verifyEmail');
-var verifynewemailContent = require('./content/verifynewEmail');
+import nodemailer from 'nodemailer';
+import resetmailContent from './content/resetEmail';
+import passupdatemailContent from './content/passupdateEmail';
+import verifyemailContent from './content/verifyEmail';
+import verifynewemailContent from './content/verifynewEmail';
 
-var transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   service: process.env.SMTP.SERVICE,
   host: process.env.SMTP.HOST,
   port: process.env.SMTP.PORT,
@@ -19,8 +19,8 @@ var transporter = nodemailer.createTransport({
   secureConnection: process.env.SMTP.SECURE_CONNECTION
 });
 
-var verifyEmail = (user, url)=>{
-  var mailOptions = {
+const verifyEmail = (user, url)=>{
+  const mailOptions = {
       from: '"Bikbox" <do-not-reply@bikbox.com>', // sender address
       to: `${user.email}`, // list of receivers
       subject: 'Welcome to Bikbox', // Subject line
@@ -30,8 +30,8 @@ var verifyEmail = (user, url)=>{
   return mailOptions;
 }
 
-var verifyNewEmail = (user, url)=>{
-  var mailOptions = {
+const verifyNewEmail = (user, url)=>{
+  const mailOptions = {
       from: '"Bikbox" <do-not-reply@bikbox.com>', // sender address
       to: `${user.email}`, // list of receivers
       subject: 'Verify your new email address', // Subject line
@@ -40,8 +40,8 @@ var verifyNewEmail = (user, url)=>{
   };
   return mailOptions;
 }
-var resetEmail = (user, url)=>{
-  var mailOptions = {
+const resetEmail = (user, url)=>{
+  const mailOptions = {
       from: '"Bikbox" <do-not-reply@bikbox.com>', // sender address
       to: `${user.email}`, // list of receivers
       subject: 'Reset your password', // Subject line
@@ -51,8 +51,8 @@ var resetEmail = (user, url)=>{
   return mailOptions;
 }
 
-var passwordchangedEmail = (user)=>{
-  var mailOptions = {
+const passwordchangedEmail = (user)=>{
+  const mailOptions = {
       from: '"Bikbox" <do-not-reply@bikbox.com>', // sender address
       to: `${user.email}`, // list of receivers
       subject: 'Your password has been updated', // Subject line
@@ -62,4 +62,4 @@ var passwordchangedEmail = (user)=>{
   return mailOptions;
 }
 
-module.exports={transporter, resetEmail, passwordchangedEmail, verifyEmail, verifyNewEmail};
+export { transporter, resetEmail, passwordchangedEmail, verifyEmail, verifyNewEmail };

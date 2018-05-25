@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const _ = require('lodash');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import _ from 'lodash';
+import validator from 'validator';
 
 const PersonalInfoSchema = new mongoose.Schema({
   email: {
@@ -33,17 +33,15 @@ const PersonalInfoSchema = new mongoose.Schema({
   }
 })
 
-PersonalInfoSchema.methods.toJSON = function () {
-  const user = this;
-  const userObject = user.toObject();
+PersonalInfoSchema.methods.toJSON = () => {
+  const personalInfoObject = this.toObject();
 
-  return _.pick(userObject, ['_id', 'email'])
+  return _.pick(personalInfoObject, ['_id', 'email'])
 };
 
-PersonalInfoSchema.statics.findByCredentials = function (email, password) {
-  const PersonalInfoSchema = this;
+PersonalInfoSchema.statics.findByCredentials = (email, password) => {
 
-  return PersonalInfoSchema.findOne({ email }).then((personalInfo) => {
+  return this.findOne({ email }).then((personalInfo) => {
     if (!personalInfo) {
       return Promise.reject(400);
     }
@@ -67,14 +65,13 @@ PersonalInfoSchema.statics.findByCredentials = function (email, password) {
   })
 };
 
-PersonalInfoSchema.pre('save', function (next) {
-  const personalInfo = this;
-  if (personalInfo.isModified('password')) {
+PersonalInfoSchema.pre('save', (next) => {
+  if (this.isModified('password')) {
     bcrypt.genSalt(process.env.TOKEN.SALT_ROUNDS, (err, salt) => {
       if (err) { return next(err) }
-      bcrypt.hash(personalInfo.password, salt, (err, hash) => {
+      bcrypt.hash(this.password, salt, (err, hash) => {
         if (err) { return next(err) }
-        personalInfo.password = hash;
+        this.password = hash;
         next();
       });
     });
@@ -85,4 +82,4 @@ PersonalInfoSchema.pre('save', function (next) {
 
 const PersonalInfo = mongoose.model('PersonalInfo', PersonalInfoSchema);
 
-module.exports = { PersonalInfo };
+export default PersonalInfo;

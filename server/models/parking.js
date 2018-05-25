@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Parking = mongoose.model('Parking', {
   name: {
@@ -21,4 +21,4 @@ const Parking = mongoose.model('Parking', {
   }
 });
 
-module.exports = { Parking };
+export default Parking;

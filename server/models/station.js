@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Station = mongoose.model('Station', {
   name: String,
@@ -27,4 +27,4 @@ const Station = mongoose.model('Station', {
   }
 });
 
-module.exports = { Station };
+export default Station;
