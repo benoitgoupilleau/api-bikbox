@@ -4,10 +4,11 @@
   "description": "",
   "main": "server/server.js",
   "scripts": {
+    "build": "rm -rf lib/* ; babel server/ -d lib --source-maps",
     "startmongo": "sh mongo.sh",
     "start:watch": "nodemon --exec 'babel-node server/server.js'",
-    "start": "node server/server.js",
-    "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha server/**/*.test.js",
+    "start": "babel-node server/server.js",
+    "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha server/**/*.test.js --compilers js:babel-register",
     "test-watch": "nodemon --exec 'npm test'"
   },
   "engines": {
@@ -31,6 +32,7 @@
     "validator": "10.2.0"
   },
   "devDependencies": {
+    "babel-register": "^6.26.0",
     "expect": "22.4.3",
     "mocha": "5.2.0",
     "nodemon": "1.17.4",
