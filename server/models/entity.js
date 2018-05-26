@@ -14,7 +14,8 @@ const Entity = mongoose.model('Entity', {
     default: true
   },
   createdAt: Number,
-  deleteDate: Number
+  deleteDate: Number,
+  lastUpdatedDate: Number
 });
 
 export default Entity;

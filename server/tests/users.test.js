@@ -53,10 +53,10 @@ describe('GET /users/me',()=>{
 
 describe('POST /users', ()=>{
   it('should create a user', (done)=>{
-    var firstname= 'Ben';
-    var lastname = 'Goup';
-    var email = 'example@example.com';
-    var password= '123mad';
+    const firstname= 'Ben';
+    const lastname = 'Goup';
+    const email = 'example@example.com';
+    const password= '123mad';
 
     request(app).post('/users').send({email, password, firstname, lastname})
       .expect(200)

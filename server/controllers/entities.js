@@ -3,16 +3,16 @@ import _ from 'lodash';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 
-import { Entity } from './../models/entity';
+import Entity from './../models/entity';
 import { authenticate, authenticateAdmin, authenticateEntityManager } from './../middleware/authenticate';
 import constants from '../constants';
 
 const route = express.Router();
 
 route.post('/entity', authenticateAdmin, (req, res) => {
-  var entity = new Entity({
+  const entity = new Entity({
     name: req.body.name,
-    description: req.user.description,
+    description: req.body.description,
     createdAt: moment(req.body.createdAt) && moment()
   })
   entity.save().then((doc) => {
@@ -24,7 +24,7 @@ route.post('/entity', authenticateAdmin, (req, res) => {
 
 route.get('/entities', authenticateEntityManager, (req, res) => {
   Entity.find({ active: true }).then((entities) => {
-    let filteredEntities = entities; 
+    const filteredEntities = entities; 
     if (req.user.userType === constants.userType[1]) {
       filteredEntities.filter((entity) => user._entity.includes(entity._id))
     }
@@ -56,7 +56,7 @@ route.get('/entity/:id', authenticate, (req, res) => {
 
 route.delete('/entity/:id', authenticateAdmin, async (req, res) => {
   try {
-    var id = req.params.id;
+    const id = req.params.id;
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();
     }
@@ -73,12 +73,13 @@ route.delete('/entity/:id', authenticateAdmin, async (req, res) => {
 
 route.patch('/entity/:id', authenticateAdmin, async (req, res) => {
   try {
-    var id = req.params.id;
-    var body = _.pick(req.body, ['name', 'description']);
+    const id = req.params.id;
+    const body = _.pick(req.body, ['name', 'description']);
 
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();
     }
+    body.lastUpdatedDate = moment()
 
     const entity = await Entity.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
     if (!entity) {

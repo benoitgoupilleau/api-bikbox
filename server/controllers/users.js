@@ -28,7 +28,7 @@ route.post('/users/update', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body, ['email', 'password', 'firstname', 'lastname']);
     const user = req.user;
-    var passwordchanged = false;
+    const passwordchanged = false;
     bcrypt.compare(body.password, user.password, (err, res) => {
       if (!res) {
         bcrypt.genSalt(process.env.TOKEN.SALT_ROUNDS,(err, salt) => {
@@ -135,7 +135,7 @@ route.post('/users/forgot', async (req, res) => {
       return res.status(404).send();
     }
     user.generatePasswordToken().then((token) => {
-      var url = process.env.SERVER_URL +'users/reset/' + token;
+      const url = process.env.SERVER_URL +'users/reset/' + token;
       transporter.sendMail(resetEmail(user,url), (err, info) => {
         if(err){
           return res.status(502).send()

@@ -18,7 +18,10 @@ const Parking = mongoose.model('Parking', {
     type: Boolean,
     required: true,
     default: true
-  }
+  },
+  createdAt: Number,
+  deleteDate: Number,
+  lastUpdatedDate: Number
 });
 
 export default Parking;
