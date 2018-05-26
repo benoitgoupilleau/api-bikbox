@@ -3,16 +3,12 @@ import moment from 'moment';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
+import constants from '../constants';
 
 import { transporter, verifyEmail, verifyNewEmail } from './../email/mailconfig';
 
 
 const UserSchema= new mongoose.Schema({
-  _personalInfo: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'PersonalInfo'
-  },
   _entity: [{
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -21,7 +17,7 @@ const UserSchema= new mongoose.Schema({
   userType:{
     type: String,
     required: true,
-    enum: ['user', 'entityManager', 'admin'],
+    enum: constants.userType,
     default: 'user'
   },
   createdAt: {
@@ -128,7 +124,7 @@ UserSchema.statics.findByToken = function (token, userType){
     '_id': decoded._id,
     'tokens.token': token,
     'tokens.access': 'auth',
-    userType
+    userType: { $in: userType}
   }).then((user) => {
     if(!user) {
       return Promise.reject(400);

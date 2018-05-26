@@ -4,6 +4,10 @@ import _ from 'lodash';
 import validator from 'validator';
 
 const PersonalInfoSchema = new mongoose.Schema({
+  _id: {
+    ref: 'User',
+    type: mongoose.Schema.Types.ObjectId
+  },
   email: {
     type: String,
     required: true,

@@ -12,7 +12,9 @@ const Entity = mongoose.model('Entity', {
     type: Boolean,
     required: true,
     default: true
-  }
+  },
+  createdAt: Number,
+  deleteDate: Number
 });
 
 export default Entity;
