@@ -2,9 +2,12 @@ import express from 'express';
 import _ from 'lodash';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import moment from 'moment';
+import generator from 'generate-password';
 
 import User from './../models/user';
-import { authenticate } from './../middleware/authenticate';
+import PersonalInfo from './../models/personalInfo'
+import { authenticate, authenticateAdmin } from './../middleware/authenticate';
 import { transporter, resetEmail, passwordchangedEmail } from './../email/mailconfig';
 
 const route = express.Router();
@@ -13,79 +16,46 @@ const route = express.Router();
 
 route.post('/users', async (req, res) => {
   try {
-    const body = _.pick(req.body, ['email', 'password', 'firstname', 'lastname']);
-    const user = new User(body);
-    await user.save();
-    const {token, tokendate} = await user.generateAuthToken();
-    await user.verifyEmailtoken(false);
-    res.header({'x-auth': token, 'x-auth-date': tokendate}).send(user);
-  } catch (e) {
-    res.status(400).send();
-  }
-});
-
-route.post('/users/update', authenticate, async (req, res) => {
-  try {
-    const body = _.pick(req.body, ['email', 'password', 'firstname', 'lastname']);
-    const user = req.user;
-    const passwordchanged = false;
-    bcrypt.compare(body.password, user.password, (err, res) => {
-      if (!res) {
-        bcrypt.genSalt(process.env.TOKEN.SALT_ROUNDS,(err, salt) => {
-          if(err){return next(err)}
-          bcrypt.hash(body.password, salt, (err, hash) => {
-            if (err) {return next(err)}
-            user.password=hash;
-            user.save().then(() => {
-              transporter.sendMail(passwordchangedEmail(user),(err, info) => {
-                if(err){
-                  return res.status(502).send()
-                }
-              })
-            })
-          });
-        });
-      }
+    const body = _.pick(req.body, ['email', '_entity', 'userType']);
+    const user = await User.create({
+      _entity: body._entity,
+      userType: body.userType,
+      createdAt: moment()
     });
-    if(user.email !== body.email) {
-      user.email = body.email;
-      user.validatedemail=false;
-      user.verifyEmailtoken(true);
-    };
-    user.firstname= body.firstname;
-    user.lastname= body.lastname;
-    await user.save();
-    res.status(200).send();
+
+    const password = generator.generate({
+      length: 8,
+      numbers: true,
+      symbols: true,
+      uppercase: true,
+      strict: true
+    });
+    const personalInfo = new PersonalInfo({
+      _id: user._id,
+      email: body.email,
+      password
+    })
+    await personalInfo.save();
+    res.status(200).send(user)
   } catch (e) {
+    console.log(e)
     res.status(400).send();
-  }
-});
-
-route.get('/users/me', authenticate, (req, res) => {
-  res.send(req.user);
-});
-
-route.post('/users/token', authenticate, async (req, res) => {
-  try {
-    const {token, tokendate} = await req.user.updateToken(req.token);
-    res.header({'x-auth': token,'x-auth-date': tokendate}).send(req.user);
-  } catch (e) {
-    res.status(e).send();
   }
 });
 
 route.post('/users/login', async (req, res) => {
   try {
     const login = _.pick(req.body, ['email', 'password']);
-    const user = await User.findByCredentials(login.email, login.password);
-    const {token, tokendate} = await user.generateAuthToken();
-    res.header({'x-auth': token,'x-auth-date': tokendate}).send(user);
+    const personalInfo = await PersonalInfo.findByCredentials(login.email, login.password);
+    const user = await User.findById(personalInfo._id)
+    const token = await user.generateAuthToken();
+    res.header({ 'x-auth': token }).send(user);
   } catch (e) {
     res.status(e).send();
   }
 });
 
-route.delete('/users/me/token', authenticate, async (req, res) => {
+route.delete('/users/token', authenticate, async (req, res) => {
   try {
     await req.user.removeToken(req.token)
     res.status(200).send();
@@ -113,7 +83,7 @@ route.post('/users/verify', (req, res) => {
 })
 
 route.get('/users/verify/:token', (req, res) => {
-  jwt.verify(req.params.token, process.env.TOKEN.JWT_SECRET_EMAIL, (err, decoded) => {
+  jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_EMAIL, (err, decoded) => {
     if(err){
       return res.status(400).send(err.message)
     }
@@ -147,7 +117,7 @@ route.post('/users/forgot', async (req, res) => {
 });
 
 route.get('/users/reset/:token', (req, res) => {
-  jwt.verify(req.params.token, process.env.TOKEN.JWT_SECRET_PASSWORD, (err, decoded) => {
+  jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, (err, decoded) => {
     if(err){
       return res.status(400).send(err.message)
     }
@@ -157,7 +127,7 @@ route.get('/users/reset/:token', (req, res) => {
 
 route.post('/users/reset/:token', (req, res) => {
   const password = _.pick(req.body, ['password']).password;
-  jwt.verify(req.params.token, process.env.TOKEN.JWT_SECRET_PASSWORD, (err, decoded) => {
+  jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, (err, decoded) => {
     if(err){
       return res.status(400).send(err.message)
     }

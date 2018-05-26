@@ -5,18 +5,18 @@ import verifyemailContent from './content/verifyEmail';
 import verifynewemailContent from './content/verifynewEmail';
 
 const transporter = nodemailer.createTransport({
-  service: process.env.SMTP.SERVICE,
-  host: process.env.SMTP.HOST,
-  port: process.env.SMTP.PORT,
-  secure: process.env.SMTP.SECURE, // secure:true for port 465, secure:false for port 587
+  service: process.env.SMTP_SERVICE,
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: process.env.SMTP_SECURE, // secure:true for port 465, secure:false for port 587
   auth: {
-    user: process.env.SMTP.AUTH_USER,
-    pass: process.env.SMTP.AUTH_PASSWORD
+    user: process.env.SMTP_AUTH_USER,
+    pass: process.env.SMTP_AUTH_PASSWORD
   },
   starttls: {
-    enable: process.env.SMTP.STARTTLS
+    enable: process.env.SMTP_STARTTLS
   },
-  secureConnection: process.env.SMTP.SECURE_CONNECTION
+  secureConnection: process.env.SMTP_SECURE_CONNECTION
 });
 
 const verifyEmail = (user, url)=>{
