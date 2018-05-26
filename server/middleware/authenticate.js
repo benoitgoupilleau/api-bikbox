@@ -1,4 +1,5 @@
 import User from './../models/user';
+import Sensor from './../models/sensor';
 import constants from '../constants';
 
 const authenticate = (req, res,next) => {
@@ -46,8 +47,19 @@ const authenticateEntityManager = (req, res, next) => {
   });
 };
 
-const authenticateSensor = (req, res, next) => {
-  next();
+const authenticateStation = (req, res, next) => {
+  const token = req.header('x-auth');
+
+  Station.findByToken(token).then((station) => {
+    if (!station) {
+      return Promise.reject();
+    }
+    req.station = station;
+    req.token = token;
+    next();
+  }).catch((e) => {
+    res.status(e).send();
+  });
 };
 
-export { authenticate, authenticateEntityManager, authenticateAdmin, authenticateSensor };
+export { authenticate, authenticateEntityManager, authenticateAdmin, authenticateStation };
