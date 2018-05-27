@@ -5,6 +5,7 @@ const Parking = mongoose.model('Parking', {
     type: String,
     required: true,
     minlength: 1,
+    unique: true,
     trim: true
   },
   description: String,

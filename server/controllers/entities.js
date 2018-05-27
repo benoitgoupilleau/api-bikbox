@@ -10,10 +10,11 @@ import constants from '../constants';
 const route = express.Router();
 
 route.post('/entity', authenticateAdmin, (req, res) => {
+  const body = _.pick(req.body, ['name', 'description', 'createdAt']);
   const entity = new Entity({
-    name: req.body.name,
-    description: req.body.description,
-    createdAt: moment(req.body.createdAt) && moment()
+    name: body.name,
+    description: body.description,
+    createdAt: moment(body.createdAt) && moment()
   })
   entity.save().then((doc) => {
     res.send(doc);
@@ -24,9 +25,9 @@ route.post('/entity', authenticateAdmin, (req, res) => {
 
 route.get('/entities', authenticateEntityManager, (req, res) => {
   Entity.find({ active: true }).then((entities) => {
-    const filteredEntities = entities; 
+    let filteredEntities = entities; 
     if (req.user.userType === constants.userType[1]) {
-      filteredEntities.filter((entity) => user._entity.includes(entity._id))
+      filteredEntities = entities.filter((entity) => user._entity.includes(entity._id))
     }
     res.send(filteredEntities);
   }, () => {

@@ -5,6 +5,7 @@ const Entity = mongoose.model('Entity', {
     type: String,
     required: true,
     minlength: 1,
+    unique: true,
     trim: true
   },
   description: String,

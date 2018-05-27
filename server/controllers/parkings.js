@@ -10,12 +10,13 @@ import constants from '../constants';
 const route = express.Router();
 
 route.post('/parking', authenticateAdmin, (req, res) => {
+  const body = _.pick(req.body, ['name', 'description', 'address', '_entity', 'createdAt']);
   const parking = new Parking({
-    name: req.body.name,
-    description: req.body.description,
-    address: req.body.address,
-    _entity: req.body._entity,
-    createdAt: moment(req.body.createdAt) && moment()
+    name: body.name,
+    description: body.description,
+    address: body.address,
+    _entity: body._entity,
+    createdAt: moment(body.createdAt) && moment()
   })
   parking.save().then((doc) => {
     res.send(doc);
@@ -26,9 +27,9 @@ route.post('/parking', authenticateAdmin, (req, res) => {
 
 route.get('/parkings', authenticate, (req, res) => {
   Parking.find({ active: true }).then((parkings) => {
-    const filteredParkings = parkings; 
+    let filteredParkings = parkings; 
     if (req.user.userType !== constants.userType[2]) {
-      filteredParkings.filter((parking) => user._entity.includes(parking._entity))
+      filteredParkings = parkings.filter((parking) => user._entity.includes(parking._entity))
     }
     res.send(filteredParkings);
   }, () => {

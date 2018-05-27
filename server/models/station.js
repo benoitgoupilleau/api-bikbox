@@ -1,10 +1,16 @@
 import mongoose from 'mongoose';
 
 const Station = mongoose.model('Station', {
-  name: String,
+  name: {
+    type: String,
+    required: true,
+    minlength: 1,
+    trim: true
+  },
   identifier: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   _parking: {
     type: mongoose.Schema.Types.ObjectId,
@@ -24,7 +30,10 @@ const Station = mongoose.model('Station', {
     type: Boolean,
     required: true,
     default: true
-  }
+  },
+  createdAt: Number,
+  deleteDate: Number,
+  lastUpdatedDate: Number
 });
 
 export default Station;
