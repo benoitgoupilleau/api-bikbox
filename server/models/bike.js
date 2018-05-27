@@ -19,7 +19,10 @@ const Bike = mongoose.model('Bike', {
     type: Boolean,
     required: true,
     default: true
-  }
+  },
+  createdAt: Number,
+  deleteDate: Number,
+  lastUpdatedDate: Number
 });
 
 export default Bike;
