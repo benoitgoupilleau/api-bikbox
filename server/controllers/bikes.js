@@ -4,7 +4,7 @@ import { ObjectID } from 'mongodb';
 import moment from 'moment';
 
 import Bike from './../models/bike';
-import { authenticateAdmin, authenticateEntityManager } from './../middleware/authenticate';
+import { authenticate, authenticateAdmin, authenticateEntityManager } from './../middleware/authenticate';
 import constants from '../constants';
 
 const route = express.Router();

@@ -23,7 +23,10 @@ const Sensor = mongoose.model('Sensor', {
     type: Boolean,
     required: true,
     default: true
-  }
+  },
+  createdAt: Number,
+  deleteDate: Number,
+  lastUpdatedDate: Number
 });
 
 export default Sensor;

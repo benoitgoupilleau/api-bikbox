@@ -4,6 +4,7 @@ import users from './users';
 import entities from './entities';
 import parkings from './parkings';
 import stations from './stations';
+import bikes from './bikes';
 
 import { transporter, resetEmail, passwordchangedEmail } from './../email/mailconfig';
 
@@ -14,6 +15,7 @@ router.use(users);
 router.use(entities);
 router.use(parkings);
 router.use(stations);
+router.use(bikes);
 
 router.get('/', async (req, res) => {
   res.status(200).send(`Hello from the API BikBox ${JSON.stringify(req.hostname)}`)
