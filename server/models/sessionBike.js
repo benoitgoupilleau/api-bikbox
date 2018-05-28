@@ -12,8 +12,11 @@ const SessionBike = mongoose.model('SessionBike', {
   },
   endDate: {
     type: Number,
-    required: true
-  }
+    required: true,
+    default: null
+  },
+  createdAt: Number,
+  lastUpdatedDate: Number
 });
 
 export default SessionBike;

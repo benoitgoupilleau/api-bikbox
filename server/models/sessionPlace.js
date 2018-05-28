@@ -13,7 +13,9 @@ const SessionPlace = mongoose.model('SessionPlace', {
   endDate: {
     type: Number,
     required: true
-  }
+  },
+  createdAt: Number,
+  lastUpdatedDate: Number
 });
 
 export default SessionPlace;

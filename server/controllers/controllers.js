@@ -5,6 +5,8 @@ import entities from './entities';
 import parkings from './parkings';
 import stations from './stations';
 import bikes from './bikes';
+import sessionBikes from './sessionBikes';
+import sessionPlaces from './sessionPlaces';
 
 import { transporter, resetEmail, passwordchangedEmail } from './../email/mailconfig';
 
@@ -16,6 +18,8 @@ router.use(entities);
 router.use(parkings);
 router.use(stations);
 router.use(bikes);
+router.use(sessionBikes);
+router.use(sessionPlaces);
 
 router.get('/', async (req, res) => {
   res.status(200).send(`Hello from the API BikBox ${JSON.stringify(req.hostname)}`)
