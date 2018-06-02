@@ -6,9 +6,9 @@
   "scripts": {
     "build": "rm -rf lib/* ; babel server/ -d lib --source-maps",
     "startmongo": "sh mongo.sh",
-    "start:watch": "nodemon --exec 'babel-node server/server.js'",
+    "start:watch": "source .env.dev && nodemon --exec 'babel-node server/server.js'",
     "start": "babel-node server/server.js",
-    "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha server/**/*.test.js --compilers js:babel-register",
+    "test": "source .env.test && mocha server/**/*.test.js --compilers js:babel-register",
     "test-watch": "nodemon --exec 'npm test'"
   },
   "engines": {

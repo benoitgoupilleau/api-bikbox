@@ -1,6 +1,5 @@
-import './config/config.js';
-
 import cluster from 'cluster';
+import os from 'os';
 import express from 'express';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
@@ -10,7 +9,7 @@ import mongoose from './db/mongoose.js';
 const port = process.env.PORT || 3000;
 
 if (cluster.isMaster  && process.env.NODE_ENV !== 'test') {
-  const cpuCount = require('os').cpus().length;
+  const cpuCount = os.cpus().length;
   for (let i = 0; i < cpuCount; i++) {
     cluster.fork();
   }
