@@ -44,6 +44,19 @@ PersonalInfoSchema.methods.toJSON = function () {
   return _.pick(personalInfoObject, ['_id', 'email'])
 };
 
+PersonalInfoSchema.methods.verifyEmailtoken = function (user) {
+  const personalInfo = this;
+  const access = 'verifyemail';
+  const token = jwt.sign({ _id: personalInfo._id.toHexString(), access }, process.env.TOKEN_JWT_SECRET_EMAIL, { expiresIn: process.env.TOKEN_DURATION_EMAIL }).toString()
+  const url = `${process.env.API_URL}users/verify/${token}`;
+  transporter.sendMail(verifyEmail(this, url), (err, info) => {
+    if (err) {
+      return Promise.reject(502);
+    }
+    return Promise.resolve();
+  })
+};
+
 PersonalInfoSchema.statics.findByCredentials = function (email, password) {
   const PersonalInfo = this;
   return PersonalInfo.findOne({ email }).then((personalInfo) => {

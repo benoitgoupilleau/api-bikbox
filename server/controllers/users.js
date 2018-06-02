@@ -8,12 +8,12 @@ import generator from 'generate-password';
 import User from './../models/user';
 import PersonalInfo from './../models/personalInfo'
 import { authenticate, authenticateAdmin } from './../middleware/authenticate';
-import { transporter, welcomeEmailPayload, passwordchangedEmail } from './../email/mailconfig';
+import { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload } from './../email/mailconfig';
 
 const route = express.Router();
 
-//****** USER endpoints ***************************
-
+//****** Admin USER endpoints ***************************
+// ok
 route.post('/adminusers', async (req, res) => {
   try {
     const body = _.pick(req.body, ['email', '_entity', 'userType']);
@@ -36,14 +36,21 @@ route.post('/adminusers', async (req, res) => {
       password
     })
     await personalInfo.save();
-    transporter.sendMail(welcomeEmailPayload(user, 'url')) // to update #############
-    res.status(200).send(user)
+    const token = await user.generatePasswordToken()
+    const url = process.env.WEB_URL + 'users/reset/' + token;
+    transporter.sendMail(welcomeEmailPayload(user, url), (err, info) => {
+      if (err) {
+        return res.status(502).send()
+      }
+      return res.status(200).send(user)
+    })
   } catch (e) {
     console.log(e)
     res.status(400).send();
   }
 });
 
+// ok
 route.post('/adminusers/login', async (req, res) => {
   try {
     const login = _.pick(req.body, ['email', 'password']);
@@ -56,6 +63,7 @@ route.post('/adminusers/login', async (req, res) => {
   }
 });
 
+// ok
 route.delete('/adminusers/token', authenticate, async (req, res) => {
   try {
     await req.user.removeToken(req.token)
@@ -65,87 +73,64 @@ route.delete('/adminusers/token', authenticate, async (req, res) => {
   }
 });
 
-route.post('/adminusers/verify', (req, res) => {
-  const body = _.pick(req.body, ['email']);
-  User.findOne({email: body.email}).then((user) => {
-    if(!user){
+// request for new password
+route.post('/adminusers/resetpassword', async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['email']);
+    const personalInfo = await PersonalInfo.findOne({ email: body.email })
+    if (!personalInfo) {
       return res.status(404).send();
     }
-    if(!user.validatedemail){
-      user.verifyEmailtoken(false).then(() => {
-        return res.status(200).send()
-      }).catch((e) => {
+    const user = await User.findById(personalInfo._id);
+    const token = await user.generatePasswordToken();
+    const url = `${process.env.API_URL}/resetpassword/${token}`;
+    transporter.sendMail(resetPasswordEmailPayload(user, url), (err, info) => {
+      if (err) {
         return res.status(502).send()
-      })
-    } else{
-      return res.status(400).send();
-    }
-  })
-})
-
-route.get('/adminusers/verify/:token', (req, res) => {
-  jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_EMAIL, (err, decoded) => {
-    if(err){
-      return res.status(400).send(err.message)
-    }
-    User.findOne({_id: decoded._id}).then((user) => {
-      user.validatedemail=true;
-      user.save().then(() => {
-        return res.status(200).send()
-      })
-    }).catch((e) => {
-      return res.status(400).send(e.message)
+      }
+      return res.status(200).send()
     })
-  })
-})
-
-route.post('/adminusers/forgot', async (req, res) => {
-  const body = _.pick(req.body, ['email']);
-  User.findOne({email: body.email}).then((user) => {
-    if(!user){
-      return res.status(404).send();
-    }
-    user.generatePasswordToken().then((token) => {
-      const url = process.env.SERVER_URL +'users/reset/' + token;
-      transporter.sendMail(resetPasswordEmail(user,url), (err, info) => {
-        if(err){
-          return res.status(502).send()
-        }
-        return res.status(200).send()
-      })
-    })
-  })
+  } catch (error) {
+    return res.status(400).send()
+  }
 });
 
-route.get('/adminusers/reset/:token', (req, res) => {
+// route to redirect to screen allowing to update the password
+route.get('/adminusers/resetpassword/:token', (req, res) => {
   jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, (err, decoded) => {
     if(err){
       return res.status(400).send(err.message)
     }
-    return res.status(200).send()
+    return res.redirect(`${process.env.WEB_URL}/resetpassword/${req.params.token}`);
   })
 })
 
-route.post('/adminusers/reset/:token', (req, res) => {
+// finale route to save the new password
+route.post('/adminusers/resetpassword/:token', async (req, res) => {
   const password = _.pick(req.body, ['password']).password;
   jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, (err, decoded) => {
     if(err){
       return res.status(400).send(err.message)
     }
 
-    User.findOne({_id: decoded._id, resetpasswordtoken: true}).then((user) => {
-      if(!user){
-        return res.status(404).send();
-      }
-      user.password=password;
-      user.resetpasswordtoken=undefined;
-      user.save().then(() => {
-        transporter.sendMail(passwordchangedEmail(user),(err, info) => {
-          if(err){
-            return res.status(502).send()
-          }
-          return res.status(200).send()
-        })
+    const user = await User.findOne({_id: decoded._id, resetpasswordtoken: true})
+    if(!user){
+      return res.status(404).send();
+    }
+    const personalInfo = await PersonalInfo.findById(user._id);
+    if (!personalInfo) {
+      return res.status(404).send();
+    }
+    personalInfo.password = password;
+    await personalInfo.save();
+
+    user.resetpasswordtoken=false;
+    user.save().then(() => {
+      transporter.sendMail(passwordChangedEmailPayload(user), (err, info) => {
+        if(err){
+          return res.status(502).send()
+        }
+        return res.status(200).send()
       })
     })
   })

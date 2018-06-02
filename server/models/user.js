@@ -25,6 +25,7 @@ const UserSchema= new mongoose.Schema({
     required: true
   },
   resetpasswordtoken:{
+    default: true,
     type: Boolean
   },
   tokens: [{
@@ -51,6 +52,7 @@ UserSchema.methods.toJSON = function () {
   return _.pick(userObject, ['_id', 'userType'])
 };
 
+// ok
 UserSchema.methods.generateAuthToken = async function () {
   const user = this;
   const access = 'auth';
@@ -61,29 +63,7 @@ UserSchema.methods.generateAuthToken = async function () {
   return token;
 };
 
-UserSchema.methods.verifyEmailtoken = function (newEmail) {
-  const user = this;
-  const access = 'verifyemail';
-  const token = jwt.sign({ _id: this._id.toHexString(), access }, process.env.TOKEN_JWT_SECRET_EMAIL, { expiresIn: process.env.TOKEN_DURATION_EMAIL }).toString()
-
-  const url = `${process.env.SERVER_URL}users/verify/${token}`;
-  if(newEmail){
-    transporter.sendMail(verifyNewEmail(this, url), (err, info)=>{
-      if(err){
-        return Promise.reject(502);
-      }
-      return Promise.resolve();
-    })
-  } else {
-    transporter.sendMail(verifyEmail(this, url), (err, info)=>{
-      if(err){
-        return Promise.reject(502);
-      }
-      return Promise.resolve();
-    })
-  }
-};
-
+// ok
 UserSchema.methods.removeToken = function (token) {
   const user = this;
   user.update({
@@ -93,7 +73,7 @@ UserSchema.methods.removeToken = function (token) {
   });
 } 
   
-
+// ok 
 UserSchema.methods.generatePasswordToken = async function () {
   const user = this;
   const access = 'password';

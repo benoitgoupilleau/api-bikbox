@@ -4,11 +4,11 @@
   "description": "",
   "main": "server/server.js",
   "scripts": {
-    "build": "rm -rf lib/* ; babel server/ -d lib --source-maps",
+    "build": "rm -rf lib/* ; babel server/ -d lib --source-maps --ignore server/tests",
     "start": "node lib/server.js",
     "startmongo": "sh mongo.sh",
-    "startdev:watch": "source .env.dev && nodemon --exec 'babel-node server/server.js'",
-    "startdev": "source .env.dev && babel-node server/server.js",
+    "dev:watch": "source .env.dev && nodemon --exec 'babel-node server/server.js'",
+    "dev": "source .env.dev && babel-node server/server.js",
     "test": "source .env.test && mocha server/**/*.test.js --compilers js:babel-register",
     "test-watch": "nodemon --exec 'npm test'",
     "heroku-postbuild": "yarn run build"
