@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import resetPasswordEmail from './content/resetPasswordEmail';
 import passwordUpdateEmail from './content/passwordUpdateEmail';
 import welcomeEmail from './content/welcomeEmail';
-import verifyNewEmail from './content/verifyNewEmail';
+// import verifyNewEmail from './content/verifyNewEmail';
 
 const transporter = nodemailer.createTransport({
   service: process.env.SMTP_SERVICE,
@@ -30,16 +30,16 @@ const welcomeEmailPayload = (user, url)=>{
   return mailOptions;
 }
 
-const verifyNewEmailPayload = (user, url)=>{
-  const mailOptions = {
-    from: "Bik'box <do-not-reply@bikbox.com>", // sender address
-    to: `${user.email}`, // list of receivers
-    subject: 'Verify your new email address', // Subject line
-    text: `Hello ${user.firstname},\n\nYour email address has been changed, please verify your email so we know it's still you:\n\n${url}\n\nIf you did not make this request or need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
-    html: `${verifyNewEmail(user,url)}` // html body
-  };
-  return mailOptions;
-}
+// const verifyNewEmailPayload = (user, url)=>{
+//   const mailOptions = {
+//     from: "Bik'box <do-not-reply@bikbox.com>", // sender address
+//     to: `${user.email}`, // list of receivers
+//     subject: 'Verify your new email address', // Subject line
+//     text: `Hello ${user.firstname},\n\nYour email address has been changed, please verify your email so we know it's still you:\n\n${url}\n\nIf you did not make this request or need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
+//     html: `${verifyNewEmail(user,url)}` // html body
+//   };
+//   return mailOptions;
+// }
 const resetPasswordEmailPayload = (user, url)=>{
   const mailOptions = {
     from: "Bik'box <do-not-reply@bikbox.com>", // sender address
@@ -62,4 +62,4 @@ const passwordChangedEmailPayload = (user)=>{
   return mailOptions;
 }
 
-export { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload, verifyNewEmailPayload };
+export { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload };
