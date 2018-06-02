@@ -5,7 +5,7 @@ import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import constants from '../constants';
 
-import { transporter, verifyEmail, verifyNewEmail } from './../email/mailconfig';
+import { transporter } from './../email/mailconfig';
 
 
 const UserSchema= new mongoose.Schema({
