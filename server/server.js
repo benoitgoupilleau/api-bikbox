@@ -9,7 +9,8 @@ import mongoose from './db/mongoose.js';
 
 const port = process.env.PORT || 3000;
 
-if (cluster.isMaster  && process.env.NODE_ENV !== 'test') {
+
+if (cluster.isMaster  && process.env.NODE_ENV !== 'test' && process.env.ALLOW_CLUSTER) {
   const cpuCount = os.cpus().length;
   for (let i = 0; i < cpuCount; i++) {
     cluster.fork();
