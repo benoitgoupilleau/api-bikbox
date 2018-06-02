@@ -1,4 +1,4 @@
-const verifyNewEmail = (user, url)=>{
+const welcomeEmail = (user, url)=>{
   return (
     `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
@@ -6,7 +6,7 @@ const verifyNewEmail = (user, url)=>{
         <meta http-equiv="content-type" content="text/html"; charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta http-equiv="x-ua-compatible" content="IE=edge" />
-        <title>Votre adresse email a été modifiée</title>
+        <title>Bienvenue</title>
         <link href="https://fonts.googleapis.com/css?family=Montserrat:300|Nunito:300" rel="stylesheet">
         <style type="text/css">
           #bodyTable{
@@ -83,20 +83,20 @@ const verifyNewEmail = (user, url)=>{
                                     <!-- Body Content -->
                                     <tbody>
                                       <tr>
-                                        <td style="font-family:'Nunito', sans-serif; font-weight:400;line-height:28px;font-size:22px;padding:30px 30px 15px;text-align:left;" class="emailBody">Votre adresse email a été modifiée</td>
+                                        <td style="font-family:'Nunito', sans-serif; font-weight:400;line-height:28px;font-size:22px;padding:30px 30px 15px;text-align:left;" class="emailBody">Bienvenue sur Bik'Box</td>
                                       </tr>
                                       <tr>
-                                        <td bgcolor="#ffffff" style="font-family:'Nunito', sans-serif; font-size:12px; padding:10px 30px; text-align:left;" align="center" class="emailBody">Bonjour ${user.firstname},</td>
+                                        <td bgcolor="#ffffff" style="font-family:'Nunito', sans-serif; font-size:12px; padding:10px 30px; text-align:left;" align="center" class="emailBody">Bonjour ${user.firstname} et bienvenue !</td>
                                       </tr>
                                       <tr>
-                                        <td bgcolor="#ffffff" style="font-family:'Nunito', sans-serif; font-size:12px; padding:10px 10px 20px 30px;text-align:left;" align="center" class="emailBody">Votre adresse email a été modifiée, merci de valider votre nouvelle adresse pour que nous soyons sûr que ce soit toujours vous 😉</td>
+                                        <td bgcolor="#ffffff" style="font-family:'Nunito', sans-serif; font-size:12px; padding:10px 10px 20px 30px;text-align:left;" align="center" class="emailBody">Nous sommes heureux de vous compter parmi nous. Mais avant toute chose, merci de définir votre mot de passe pour pouvoir accéder à l'interface 😀</td>
                                       </tr>
                                       <tr>
                                         <td width="100%" bgcolor="#ffffff" style="font-family:'Nunito', sans-serif; font-size:12px;padding:10px 0 30px 0;text-align:center;" align="center" class="emailBody">
                                           <table width="60%" border="0" cellpadding="0" cellspacing="0" style="margin:0 auto;" align="center">
                                             <tbody>
                                               <tr>
-                                                <td align="center" bgcolor="#E3DE00" width="10%" style="border-radius:5px;"> <a href="${url}" style="padding:10px; width:300px; display:block; text-decoration:none; border:1px solid #E3DE00; text-align:center; font-weight:bold; font-size:14px; font-family:'Nunito', sans-serif; color:#003d5c; background:#E3DE00; border-radius:5px; line-height:17px;" class="ctaButton"> Valider mon email</a> </td>
+                                                <td align="center" bgcolor="#E3DE00" width="10%" style="border-radius:5px;"> <a href="${url}" style="padding:10px; width:300px; display:block; text-decoration:none; border:1px solid #E3DE00; text-align:center; font-weight:bold; font-size:14px; font-family:'Nunito', sans-serif; color:#003d5c; background:#E3DE00; border-radius:5px; line-height:17px;" class="ctaButton"> Définir mon mot de passe </a> </td>
                                               </tr>
                                             </tbody>
                                           </table>
@@ -147,4 +147,4 @@ const verifyNewEmail = (user, url)=>{
     </html>`
 )};
 
-export default verifyNewEmail;
+export default welcomeEmail;

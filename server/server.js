@@ -7,7 +7,7 @@ import bodyParser from 'body-parser';
 import router from './controllers/controllers';
 import mongoose from './db/mongoose.js';
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 if (cluster.isMaster  && process.env.NODE_ENV !== 'test') {
   const cpuCount = require('os').cpus().length;
@@ -23,6 +23,7 @@ if (cluster.isMaster  && process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Worker ${cluster.worker ? cluster.worker.id : "test"} running on port ${port}`);
   });
+  module.exports = app;
 }
 
 cluster.on('exit', (worker) => {

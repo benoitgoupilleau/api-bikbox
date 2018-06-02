@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
-import resetmailContent from './content/resetEmail';
-import passupdatemailContent from './content/passupdateEmail';
-import verifyemailContent from './content/verifyEmail';
-import verifynewemailContent from './content/verifynewEmail';
+import resetPasswordEmail from './content/resetPasswordEmail';
+import passwordUpdateEmail from './content/passwordUpdateEmail';
+import welcomeEmail from './content/welcomeEmail';
+import verifyNewEmail from './content/verifyNewEmail';
 
 const transporter = nodemailer.createTransport({
   service: process.env.SMTP_SERVICE,
@@ -19,47 +19,47 @@ const transporter = nodemailer.createTransport({
   secureConnection: process.env.SMTP_SECURE_CONNECTION
 });
 
-const verifyEmail = (user, url)=>{
+const welcomeEmailPayload = (user, url)=>{
   const mailOptions = {
-      from: 'Bikbox <do-not-reply@bikbox.com>', // sender address
-      to: `${user.email}`, // list of receivers
-      subject: 'Welcome to Bikbox', // Subject line
-      text: `Hello ${user.firstname},\n\nWe are thrilled to see you here. But before anything, please verify your email so we know it's you:\n\n${url}\n\nIf you need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
-      html: `${verifyemailContent(user,url)}` // html body
+    from: "Bik'Box <do-not-reply@bikbox.com>", // sender address
+    to: `${user.email}`, // list of receivers
+    subject: "Bienvenue sur Bik'Box", // Subject line
+    text: `Bonjour ${user.firstname},\n\nNous sommes heureux de vous compter parmi nous. Mais avant toute chose, merci de définir votre mot de passe pour pouvoir accéder à l'interface :\n\n${url}\n\nSi vous n'êtes pas à l'origine de cette demande ou avez besoin d'aide, n'hésitez pas à nous contacter : bonjour@bikbox.com.\n\nL'équipe Bik'Box`, // plain text body
+    html: `${welcomeEmail(user,url)}` // html body
   };
   return mailOptions;
 }
 
-const verifyNewEmail = (user, url)=>{
+const verifyNewEmailPayload = (user, url)=>{
   const mailOptions = {
-      from: 'Bikbox <do-not-reply@bikbox.com>', // sender address
-      to: `${user.email}`, // list of receivers
-      subject: 'Verify your new email address', // Subject line
-      text: `Hello ${user.firstname},\n\nYour email address has been changed, please verify your email so we know it's still you:\n\n${url}\n\nIf you did not make this request or need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
-      html: `${verifynewemailContent(user,url)}` // html body
+    from: "Bik'box <do-not-reply@bikbox.com>", // sender address
+    to: `${user.email}`, // list of receivers
+    subject: 'Verify your new email address', // Subject line
+    text: `Hello ${user.firstname},\n\nYour email address has been changed, please verify your email so we know it's still you:\n\n${url}\n\nIf you did not make this request or need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
+    html: `${verifyNewEmail(user,url)}` // html body
   };
   return mailOptions;
 }
-const resetEmail = (user, url)=>{
+const resetPasswordEmailPayload = (user, url)=>{
   const mailOptions = {
-      from: 'Bikbox <do-not-reply@bikbox.com>', // sender address
-      to: `${user.email}`, // list of receivers
-      subject: 'Reset your password', // Subject line
-      text: `Hello ${user.firstname},\n\nWe heard you need a password reset. Click the link below and you'll be redirected to a secure site from which you can set a new password:\n\n${url}\n\nIf you need additional assistance, or you did not make this change, please contact help@bikbox.com and we'll forget this ever happened.\n\nBikbox Team`, // plain text body
-      html: `${resetmailContent(user,url)}` // html body
-  };
-  return mailOptions;
-}
-
-const passwordchangedEmail = (user)=>{
-  const mailOptions = {
-      from: 'Bikbox <do-not-reply@bikbox.com>', // sender address
-      to: `${user.email}`, // list of receivers
-      subject: 'Your password has been updated', // Subject line
-      text: `Hello ${user.firstname},\n\nYour password has been updated.\n\nIf you did not make this request or need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
-      html: `${passupdatemailContent(user)}` // html body
+    from: "Bik'box <do-not-reply@bikbox.com>", // sender address
+    to: `${user.email}`, // list of receivers
+    subject: 'Reset your password', // Subject line
+    text: `Hello ${user.firstname},\n\nWe heard you need a password reset. Click the link below and you'll be redirected to a secure site from which you can set a new password:\n\n${url}\n\nIf you need additional assistance, or you did not make this change, please contact help@bikbox.com and we'll forget this ever happened.\n\nBikbox Team`, // plain text body
+    html: `${resetPasswordEmail(user,url)}` // html body
   };
   return mailOptions;
 }
 
-export { transporter, resetEmail, passwordchangedEmail, verifyEmail, verifyNewEmail };
+const passwordChangedEmailPayload = (user)=>{
+  const mailOptions = {
+    from: "Bik'box <do-not-reply@bikbox.com>", // sender address
+    to: `${user.email}`, // list of receivers
+    subject: 'Your password has been updated', // Subject line
+    text: `Hello ${user.firstname},\n\nYour password has been updated.\n\nIf you did not make this request or need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
+    html: `${passwordUpdateEmail(user)}` // html body
+  };
+  return mailOptions;
+}
+
+export { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload, verifyNewEmailPayload };

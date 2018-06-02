@@ -8,8 +8,6 @@ import bikes from './bikes';
 import sessionBikes from './sessionBikes';
 import sessionPlaces from './sessionPlaces';
 
-import { transporter, resetEmail, passwordchangedEmail } from './../email/mailconfig';
-
 const router = express.Router();
 
 router.use(express.static('public'));
@@ -22,18 +20,7 @@ router.use(sessionBikes);
 router.use(sessionPlaces);
 
 router.get('/', async (req, res) => {
-  res.status(200).send(`Hello from the API BikBox ${JSON.stringify(req.hostname)}`)
+  res.status(200).send(`Hello from the API Bik'Box ${JSON.stringify(req.hostname)}`)
 });
-
-// router.get('/test', async (req, res) => {
-  // transporter.sendMail(resetEmail({ email: 'benoit.goupilleau@gmail.com', firstname: 'Test' }, 'testurl'), (err, info) => {
-  //   if (err) {
-  //     console.log(err);
-  //     return res.status(502).send()
-  //   }
-  //   return res.status(200).send()
-  // })
-// })
-
 
 export default router;
