@@ -1,3 +1,4 @@
+import "regenerator-runtime/runtime";
 import cluster from 'cluster';
 import os from 'os';
 import express from 'express';
