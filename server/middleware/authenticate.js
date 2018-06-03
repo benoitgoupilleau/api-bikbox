@@ -12,8 +12,8 @@ const authenticate = (req, res,next) => {
     req.user= user;
     req.token =token;
     next();
-  }).catch((e)=>{
-    res.status(e).send();
+  }).catch(()=>{
+    res.status(403).send();
   });
 };
 
@@ -27,8 +27,8 @@ const authenticateAdmin = (req, res, next) => {
     req.user = user;
     req.token = token;
     next();
-  }).catch((e) => {
-    res.status(e).send();
+  }).catch(() => {
+    res.status(403).send();
   });
 };
 
@@ -42,8 +42,8 @@ const authenticateEntityManager = (req, res, next) => {
     req.user = user;
     req.token = token;
     next();
-  }).catch((e) => {
-    res.status(e).send();
+  }).catch(() => {
+    res.status(403).send();
   });
 };
 
@@ -57,9 +57,18 @@ const authenticateStation = (req, res, next) => {
     req.station = station;
     req.token = token;
     next();
-  }).catch((e) => {
-    res.status(e).send();
+  }).catch(() => {
+    res.status(403).send();
   });
 };
 
-export { authenticate, authenticateEntityManager, authenticateAdmin, authenticateStation };
+const knownInstance = (req, res, next) => {
+  const token = req.header('x-key');
+  if (token === process.env.X_KEY) {
+    next();
+  } else {
+    res.status(403).send();
+  }
+}
+
+export { authenticate, authenticateEntityManager, authenticateAdmin, authenticateStation, knownInstance };

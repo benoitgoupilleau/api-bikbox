@@ -10,9 +10,9 @@ import constants from '../constants';
 const route = express.Router();
 
 route.post('/sessionPlace', authenticateStation, (req, res) => {
-  const body = _.pick(req.body, ['_sensor', 'startDate', 'endDate']);
+  const body = _.pick(req.body, ['_sensor', 'startDate', 'endDate']); // faire pour plusieurs capteurs
   const sessionPlace = new SessionPlace({
-    _sensor: body._sensor,
+    _sensor: body._sensor, // identifier du capteur
     startDate: body.startDate,
     endDate: body.endDate,
     createdAt: moment()
@@ -55,7 +55,7 @@ route.get('/sessionPlace/:id', authenticate, (req, res) => {
   })
 });
 
-route.patch('/sessionPlace/:id', authenticateAdmin, async (req, res) => {
+route.patch('/sessionPlace/:id', authenticateAdmin, async (req, res) => { // faire ensemble de session
   try {
     const id = req.params.id;
     const body = _.pick(req.body, ['_sensor', 'endDate']);

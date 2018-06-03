@@ -7,14 +7,14 @@ import generator from 'generate-password';
 
 import User from './../models/user';
 import PersonalInfo from './../models/personalInfo'
-import { authenticate, authenticateAdmin } from './../middleware/authenticate';
+import { authenticate, authenticateAdmin, knownInstance } from './../middleware/authenticate';
 import { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload } from './../email/mailconfig';
 
 const route = express.Router();
 
 //****** Admin USER endpoints ***************************
 // ok
-route.post('/adminusers', async (req, res) => {
+route.post('/adminusers', knownInstance, async (req, res) => {
   try {
     const body = _.pick(req.body, ['email', '_entity', 'userType']);
     const user = await User.create({
@@ -51,7 +51,7 @@ route.post('/adminusers', async (req, res) => {
 });
 
 // ok
-route.post('/adminusers/login', async (req, res) => {
+route.post('/adminusers/login', knownInstance, async (req, res) => {
   try {
     const login = _.pick(req.body, ['email', 'password']);
     const personalInfo = await PersonalInfo.findByCredentials(login.email, login.password);
@@ -74,7 +74,7 @@ route.delete('/adminusers/token', authenticate, async (req, res) => {
 });
 
 // request for new password
-route.post('/adminusers/resetpassword', async (req, res) => {
+route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
   try {
     const body = _.pick(req.body, ['email']);
     const personalInfo = await PersonalInfo.findOne({ email: body.email })
@@ -106,7 +106,7 @@ route.get('/adminusers/resetpassword/:token', (req, res) => {
 })
 
 // finale route to save the new password
-route.post('/adminusers/resetpassword/:token', async (req, res) => {
+route.post('/adminusers/resetpassword/:token', knownInstance, async (req, res) => {
   const password = _.pick(req.body, ['password']).password;
   jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, async (err, decoded) => {
     if(err){
