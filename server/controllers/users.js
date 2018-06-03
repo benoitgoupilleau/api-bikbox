@@ -106,7 +106,7 @@ route.get('/adminusers/resetpassword/:token', (req, res) => {
 })
 
 // finale route to save the new password
-route.post('/adminusers/resetpassword/:token', knownInstance, async (req, res) => {
+route.post('/adminusers/resetpassword/:token', async (req, res) => {
   const password = _.pick(req.body, ['password']).password;
   jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, async (err, decoded) => {
     if(err){
