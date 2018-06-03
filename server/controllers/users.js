@@ -86,13 +86,12 @@ route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
     const url = `${process.env.API_URL}/resetpassword/${token}`;
     transporter.sendMail(resetPasswordEmailPayload(user, url), (err, info) => {
       if (err) {
-        return res.status(502).send()
+        return res.status(502).send(err)
       }
       return res.status(200).send()
     })
   } catch (error) {
-    console.log(error)
-    return res.status(400).send()
+    return res.status(400).send(error)
   }
 });
 
@@ -116,11 +115,11 @@ route.post('/adminusers/resetpassword/:token', async (req, res) => {
 
     const user = await User.findOne({ _id: decoded._id, resetpasswordtoken: true})
     if(!user){
-      return res.status(404).send();
+      return res.status(404).send('No user');
     }
     const personalInfo = await PersonalInfo.findById(user._id);
     if (!personalInfo) {
-      return res.status(404).send();
+      return res.status(404).send('No info');
     }
     personalInfo.password = password;
     await personalInfo.save();
