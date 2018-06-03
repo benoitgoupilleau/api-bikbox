@@ -64,7 +64,7 @@ const authenticateStation = (req, res, next) => {
 
 const knownInstance = (req, res, next) => {
   const token = req.header('x-key');
-  if (token === process.env.X_KEY) {
+  if (token && token.toString() === process.env.X_KEY.toString()) {
     next();
   } else {
     res.status(403).send();
