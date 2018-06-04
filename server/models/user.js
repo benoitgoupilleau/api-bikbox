@@ -5,10 +5,11 @@ const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 const constants = require('../constants');
 
-const { transporter } = require('./../email/mailconfig');
-
-
 const UserSchema= new mongoose.Schema({
+  _id: {
+    ref: 'PersonalInfo',
+    type: mongoose.Schema.Types.ObjectId
+  },
   _entity: [{
     type: mongoose.Schema.Types.ObjectId,
     required: true,

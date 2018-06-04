@@ -28,7 +28,7 @@ const authenticateAdmin = (req, res, next) => {
     req.token = token;
     next();
   }).catch(() => {
-    res.status(403).send();
+    res.status(403).send(e);
   });
 };
 
@@ -64,7 +64,7 @@ const authenticateStation = (req, res, next) => {
 
 const knownInstance = (req, res, next) => {
   const token = req.header('x-key');
-  if (token && token.toString() === process.env.X_KEY.toString()) {
+  if (token && token === process.env.X_KEY) {
     next();
   } else {
     res.status(403).send();

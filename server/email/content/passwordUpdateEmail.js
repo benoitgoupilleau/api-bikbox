@@ -1,4 +1,4 @@
-const passwordUpdateEmail = (user)=>{
+const passwordUpdateEmail = ()=>{
   return (
     `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
@@ -86,7 +86,7 @@ const passwordUpdateEmail = (user)=>{
                                         <td style="font-family:'Nunito', sans-serif; font-weight:400;line-height:28px;font-size:22px;padding:30px 30px 15px;text-align:left;" class="emailBody">Mot de passe modifié !</td>
                                       </tr>
                                       <tr>
-                                        <td bgcolor="#ffffff" style="font-family:'Nunito', sans-serif; font-size:12px; padding:10px 30px; text-align:left;" align="center" class="emailBody">Bonjour ${user.firstname} !</td>
+                                        <td bgcolor="#ffffff" style="font-family:'Nunito', sans-serif; font-size:12px; padding:10px 30px; text-align:left;" align="center" class="emailBody">Bonjour !</td>
                                       </tr>
                                       <tr>
                                         <td bgcolor="#ffffff" style="font-family:'Nunito', sans-serif; font-size:12px; padding:10px 10px 20px 30px;text-align:left;" align="center" class="emailBody">Votre mot de passe a été modifié</td>

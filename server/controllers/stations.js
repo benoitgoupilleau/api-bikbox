@@ -22,8 +22,8 @@ route.post('/station', authenticateAdmin, (req, res) => {
   })
   station.save().then((doc) => {
     res.send(doc);
-  }, () => {
-    res.status(400).send();
+  }, (err) => {
+    res.status(400).send(err);
   })
 });
 

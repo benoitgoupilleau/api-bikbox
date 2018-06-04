@@ -16,7 +16,7 @@ const Sensor = mongoose.model('Sensor', {
     default: null
   },
   voltage: {
-    type: Number,
+    type: String,
     default: null
   },
   active: {

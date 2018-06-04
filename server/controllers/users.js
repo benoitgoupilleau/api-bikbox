@@ -14,15 +14,10 @@ const route = express.Router();
 
 //****** Admin USER endpoints ***************************
 // ok
-route.post('/adminusers', knownInstance, async (req, res) => {
+route.post('/adminusers', authenticateAdmin, async (req, res) => {
   try {
     const body = _.pick(req.body, ['email', '_entity', 'userType']);
-    const user = await User.create({
-      _entity: body._entity,
-      userType: body.userType,
-      createdAt: moment()
-    });
-
+    
     const password = generator.generate({
       length: 8,
       numbers: true,
@@ -31,16 +26,24 @@ route.post('/adminusers', knownInstance, async (req, res) => {
       strict: true
     });
     const personalInfo = new PersonalInfo({
-      _id: user._id,
       email: body.email,
       password
     })
     await personalInfo.save();
+
+    const user = await User.create({
+      _id: personalInfo._id,
+      _entity: body._entity,
+      userType: body.userType,
+      createdAt: moment()
+    });
+    
     const token = await user.generatePasswordToken()
-    const url = process.env.WEB_URL + 'users/reset/' + token;
-    transporter.sendMail(welcomeEmailPayload(user, url), (err, info) => {
+    const url = `${process.env.API_URL}/adminusers/resetpassword/${token}`;
+    transporter.sendMail(welcomeEmailPayload(body.email, url), (err, info) => {
       if (err) {
-        return res.status(502).send()
+        console.log({err, info})
+        return res.status(502).send(err)
       }
       return res.status(200).send(user)
     })
@@ -83,8 +86,8 @@ route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
     }
     const user = await User.findById(personalInfo._id);
     const token = await user.generatePasswordToken();
-    const url = `${process.env.API_URL}/resetpassword/${token}`;
-    transporter.sendMail(resetPasswordEmailPayload(user, url), (err, info) => {
+    const url = `${process.env.API_URL}/adminusers/resetpassword/${token}`;
+    transporter.sendMail(resetPasswordEmailPayload(personalInfo.email, url), (err, info) => {
       if (err) {
         return res.status(502).send(err)
       }
@@ -107,10 +110,12 @@ route.get('/adminusers/resetpassword/:token', (req, res) => {
 
 // finale route to save the new password
 route.post('/adminusers/resetpassword/:token', async (req, res) => {
+  console.log("here")
   const password = _.pick(req.body, ['password']).password;
   jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, async (err, decoded) => {
     if(err){
-      return res.status(400).send(err.message)
+      console.log(err)
+      return res.status(400).send(err)
     }
 
     const user = await User.findOne({ _id: decoded._id, resetpasswordtoken: true})
@@ -126,7 +131,7 @@ route.post('/adminusers/resetpassword/:token', async (req, res) => {
 
     user.resetpasswordtoken=false;
     user.save().then(() => {
-      transporter.sendMail(passwordChangedEmailPayload(user), (err, info) => {
+      transporter.sendMail(passwordChangedEmailPayload(personalInfo.email), (err, info) => {
         if(err){
           return res.status(502).send()
         }

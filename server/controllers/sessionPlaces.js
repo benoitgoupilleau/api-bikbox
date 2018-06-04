@@ -4,24 +4,34 @@ const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
 const SessionPlace = require('./../models/sessionPlace');
+const Sensor = require('../models/sensor');
 const { authenticate, authenticateAdmin, authenticateEntityManager, authenticateStation } = require('./../middleware/authenticate');
 const constants = require('../constants');
 
 const route = express.Router();
 
-route.post('/sessionPlace', authenticateStation, (req, res) => {
-  const body = _.pick(req.body, ['_sensor', 'startDate', 'endDate']); // faire pour plusieurs capteurs
-  const sessionPlace = new SessionPlace({
-    _sensor: body._sensor, // identifier du capteur
-    startDate: body.startDate,
-    endDate: body.endDate,
-    createdAt: moment()
-  })
-  sessionPlace.save().then((doc) => {
-    res.send(doc);
-  }, () => {
-    res.status(400).send();
-  })
+route.post('/sessionPlace', authenticateStation, async (req, res) => {
+  try {
+    const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces; // faire pour plusieurs capteurs
+    if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
+      throw 'No sessionPlaces array'
+    }
+    const sessions = [];
+    for (let i = 0; i < sessionPlaces.length; i += 1) {
+      const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
+      if (!sensor) throw 'No sensor found'
+      sessions.push(new SessionPlace({
+        _sensor: sensor._id, // identifier du capteur
+        startDate: sessionPlaces[i].startDate,
+        endDate: sessionPlaces[i].endDate,
+        createdAt: moment()
+      }).save());
+    }
+    await Promise.all(sessions);
+    res.status(200).send(sessions);
+  } catch (err) {
+    res.status(400).send(err);
+  }
 });
 
 route.get('/sessionPlaces', authenticate, (req, res) => {

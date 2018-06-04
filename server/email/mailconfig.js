@@ -7,25 +7,25 @@ const welcomeEmail = require('./content/welcomeEmail');
 const transporter = nodemailer.createTransport({
   service: process.env.SMTP_SERVICE,
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE, // secure:true for port 465, secure:false for port 587
+  port: parseInt(process.env.SMTP_PORT, 10),
+  secure: !!process.env.SMTP_SECURE, // secure:true for port 465, secure:false for port 587
   auth: {
     user: process.env.SMTP_AUTH_USER,
     pass: process.env.SMTP_AUTH_PASSWORD
   },
   starttls: {
-    enable: process.env.SMTP_STARTTLS
+    enable: !!process.env.SMTP_STARTTLS
   },
-  secureConnection: process.env.SMTP_SECURE_CONNECTION
+  secureConnection: !!process.env.SMTP_SECURE_CONNECTION
 });
 
-const welcomeEmailPayload = (user, url)=>{
+const welcomeEmailPayload = (email, url)=>{
   const mailOptions = {
     from: "Bik'Box <do-not-reply@bikbox.com>", // sender address
-    to: `${user.email}`, // list of receivers
+    to: `${email}`, // list of receivers
     subject: "Bienvenue sur Bik'Box", // Subject line
-    text: `Bonjour ${user.firstname},\n\nNous sommes heureux de vous compter parmi nous. Mais avant toute chose, merci de définir votre mot de passe pour pouvoir accéder à l'interface :\n\n${url}\n\nSi vous n'êtes pas à l'origine de cette demande ou avez besoin d'aide, n'hésitez pas à nous contacter : bonjour@bikbox.com.\n\nL'équipe Bik'Box`, // plain text body
-    html: `${welcomeEmail(user,url)}` // html body
+    text: `Bonjour,\n\nNous sommes heureux de vous compter parmi nous. Mais avant toute chose, merci de définir votre mot de passe pour pouvoir accéder à l'interface :\n\n${url}\n\nSi vous n'êtes pas à l'origine de cette demande ou avez besoin d'aide, n'hésitez pas à nous contacter : bonjour@bikbox.com.\n\nL'équipe Bik'Box`, // plain text body
+    html: `${welcomeEmail(url)}` // html body
   };
   return mailOptions;
 }
@@ -40,24 +40,24 @@ const welcomeEmailPayload = (user, url)=>{
 //   };
 //   return mailOptions;
 // }
-const resetPasswordEmailPayload = (user, url)=>{
+const resetPasswordEmailPayload = (email, url)=>{
   const mailOptions = {
     from: "Bik'box <do-not-reply@bikbox.com>", // sender address
-    to: `${user.email}`, // list of receivers
-    subject: 'Reset your password', // Subject line
-    text: `Hello ${user.firstname},\n\nWe heard you need a password reset. Click the link below and you'll be redirected to a secure site = require(which you can set a new password:\n\n${url}\n\nIf you need additional assistance, or you did not make this change, please contact help@bikbox.com and we'll forget this ever happened.\n\nBikbox Team`, // plain text body
-    html: `${resetPasswordEmail(user,url)}` // html body
+    to: `${email}`, // list of receivers
+    subject: 'Modifier votre mot de passe', // Subject line
+    text: `Bonjour,\n\nNous avons reçu une demande de mot de passe. Le lien ci-dessous vous renverra sur un site sécurisé pour vous permettre de le modifier :\n\n${url}\n\nSi vous n'êtes pas à l'origine de cette demande ou avez besoin d'aide, n'hésitez pas à nous contacter : bonjour@bikbox.com.\n\nL'équipe Bik'Box`, // plain text body
+    html: `${resetPasswordEmail(url)}` // html body
   };
   return mailOptions;
 }
 
-const passwordChangedEmailPayload = (user)=>{
+const passwordChangedEmailPayload = (email)=>{
   const mailOptions = {
-    from: "Bik'box <do-not-reply@bikbox.com>", // sender address
-    to: `${user.email}`, // list of receivers
-    subject: 'Your password has been updated', // Subject line
-    text: `Hello ${user.firstname},\n\nYour password has been updated.\n\nIf you did not make this request or need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
-    html: `${passwordUpdateEmail(user)}` // html body
+    from: "Bik'Box <do-not-reply@bikbox.com>", // sender address
+    to: `${email}`, // list of receivers
+    subject: 'Votre mot de passe a été modifié', // Subject line
+    text: `Bonjour,\n\nVotre mot de passe a été modifié.\n\nSi vous n'êtes pas à l'origine de cette demande, n'hésitez pas à nous contacter : bonjour@bikbox.com.\n\nL'équipe Bik'Box`, // plain text body
+    html: `${passwordUpdateEmail()}` // html body
   };
   return mailOptions;
 }

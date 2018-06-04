@@ -4,10 +4,6 @@ const _ = require('lodash');
 const validator = require('validator');
 
 const PersonalInfoSchema = new mongoose.Schema({
-  _id: {
-    ref: 'User',
-    type: mongoose.Schema.Types.ObjectId
-  },
   email: {
     type: String,
     required: true,
@@ -49,7 +45,7 @@ PersonalInfoSchema.methods.verifyEmailtoken = function (user) {
   const access = 'verifyemail';
   const token = jwt.sign({ _id: personalInfo._id.toHexString(), access }, process.env.TOKEN_JWT_SECRET_EMAIL, { expiresIn: process.env.TOKEN_DURATION_EMAIL }).toString()
   const url = `${process.env.API_URL}users/verify/${token}`;
-  transporter.sendMail(verifyEmail(this, url), (err, info) => {
+  transporter.sendMail(verifyEmail(personalInfo.email, url), (err, info) => {
     if (err) {
       return Promise.reject(502);
     }
@@ -87,7 +83,7 @@ PersonalInfoSchema.pre('save', function (next) {
   const personalInfo = this;
 
   if (personalInfo.isModified('password')) {
-    bcrypt.genSalt(process.env.TOKEN_SALT_ROUNDS, (err, salt) => {
+    bcrypt.genSalt(parseInt(process.env.TOKEN_SALT_ROUNDS, 10), (err, salt) => {
       if (err) { return next(err) }
       bcrypt.hash(personalInfo.password, salt, (err, hash) => {
         if (err) { return next(err) }
