@@ -3,6 +3,7 @@ import cluster from 'cluster';
 import os from 'os';
 import express from 'express';
 import helmet from 'helmet';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import router from './controllers/controllers';
 import mongoose from './db/mongoose.js';
@@ -18,6 +19,7 @@ if (cluster.isMaster  && process.env.NODE_ENV !== 'test' && process.env.ALLOW_CL
 } else {
   const app = express();
   app.use(helmet());
+  app.use(cors());
   app.use(bodyParser.json());
   app.use(router);
 
