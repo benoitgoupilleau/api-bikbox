@@ -20,7 +20,7 @@ router.use(sessionBikes);
 router.use(sessionPlaces);
 
 router.get('/', async (req, res) => {
-  res.status(200).send(`Hello = require(the API Bik'Box ${JSON.stringify(req.hostname)}`)
+  res.status(200).send(`Hello from the API Bik'Box`)
 });
 
 module.exports=router;
