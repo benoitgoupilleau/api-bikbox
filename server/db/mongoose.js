@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_URI).then(connection => {
@@ -7,4 +7,4 @@ mongoose.connect(process.env.MONGODB_URI).then(connection => {
     console.log(error.message, process.env.MONGODB_URI)
   });
 
-export default mongoose;
+module.exports=mongoose;

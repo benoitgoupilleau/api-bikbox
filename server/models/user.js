@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
-import moment from 'moment';
-import jwt from 'jsonwebtoken';
-import _ from 'lodash';
-import bcrypt from 'bcryptjs';
-import constants from '../constants';
+const mongoose = require('mongoose');
+const moment = require('moment');
+const jwt = require('jsonwebtoken');
+const _ = require('lodash');
+const bcrypt = require('bcryptjs');
+const constants = require('../constants');
 
-import { transporter } from './../email/mailconfig';
+const { transporter } = require('./../email/mailconfig');
 
 
 const UserSchema= new mongoose.Schema({
@@ -109,4 +109,4 @@ UserSchema.statics.findByToken = function (token, userType){
 
 const User = mongoose.model('User', UserSchema);
 
-export default User;
+module.exports=User;

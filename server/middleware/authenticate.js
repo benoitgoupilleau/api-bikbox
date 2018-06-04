@@ -1,6 +1,6 @@
-import User from './../models/user';
-import Sensor from './../models/sensor';
-import constants from '../constants';
+const User = require('./../models/user');
+const Sensor = require('./../models/sensor');
+const constants = require('../constants');
 
 const authenticate = (req, res,next) => {
   const token = req.header('x-auth');
@@ -71,4 +71,4 @@ const knownInstance = (req, res, next) => {
   }
 }
 
-export { authenticate, authenticateEntityManager, authenticateAdmin, authenticateStation, knownInstance };
+module.exports={ authenticate, authenticateEntityManager, authenticateAdmin, authenticateStation, knownInstance };

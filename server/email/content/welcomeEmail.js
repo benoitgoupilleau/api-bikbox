@@ -147,4 +147,4 @@ const welcomeEmail = (user, url)=>{
     </html>`
 )};
 
-export default welcomeEmail;
+module.exports=welcomeEmail;

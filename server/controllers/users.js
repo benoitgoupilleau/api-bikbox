@@ -1,14 +1,14 @@
-import express from 'express';
-import _ from 'lodash';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import moment from 'moment';
-import generator from 'generate-password';
+const express = require('express');
+const _ = require('lodash');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const moment = require('moment');
+const generator = require('generate-password');
 
-import User from './../models/user';
-import PersonalInfo from './../models/personalInfo'
-import { authenticate, authenticateAdmin, knownInstance } from './../middleware/authenticate';
-import { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload } from './../email/mailconfig';
+const User = require('./../models/user');
+const PersonalInfo = require('./../models/personalInfo');
+const { authenticate, authenticateAdmin, knownInstance } = require('./../middleware/authenticate');
+const { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload } = require('./../email/mailconfig');
 
 const route = express.Router();
 
@@ -136,4 +136,4 @@ route.post('/adminusers/resetpassword/:token', async (req, res) => {
   })
 })
 
-export default route;
+module.exports=route;

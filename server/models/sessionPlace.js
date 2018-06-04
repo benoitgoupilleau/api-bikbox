@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const SessionPlace = mongoose.model('SessionPlace', {
   _sensor: {
@@ -18,4 +18,4 @@ const SessionPlace = mongoose.model('SessionPlace', {
   lastUpdatedDate: Number
 });
 
-export default SessionPlace;
+module.exports=SessionPlace;

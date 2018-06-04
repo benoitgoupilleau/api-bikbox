@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import _ from 'lodash';
-import validator from 'validator';
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const _ = require('lodash');
+const validator = require('validator');
 
 const PersonalInfoSchema = new mongoose.Schema({
   _id: {
@@ -102,4 +102,4 @@ PersonalInfoSchema.pre('save', function (next) {
 
 const PersonalInfo = mongoose.model('PersonalInfo', PersonalInfoSchema);
 
-export default PersonalInfo;
+module.exports=PersonalInfo;

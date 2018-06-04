@@ -1,8 +1,8 @@
-import nodemailer from 'nodemailer';
-import resetPasswordEmail from './content/resetPasswordEmail';
-import passwordUpdateEmail from './content/passwordUpdateEmail';
-import welcomeEmail from './content/welcomeEmail';
-// import verifyNewEmail from './content/verifyNewEmail';
+const nodemailer = require('nodemailer');
+const resetPasswordEmail = require('./content/resetPasswordEmail');
+const passwordUpdateEmail = require('./content/passwordUpdateEmail');
+const welcomeEmail = require('./content/welcomeEmail');
+// const verifyNewEmail = require('./content/verifyNewEmail');
 
 const transporter = nodemailer.createTransport({
   service: process.env.SMTP_SERVICE,
@@ -45,7 +45,7 @@ const resetPasswordEmailPayload = (user, url)=>{
     from: "Bik'box <do-not-reply@bikbox.com>", // sender address
     to: `${user.email}`, // list of receivers
     subject: 'Reset your password', // Subject line
-    text: `Hello ${user.firstname},\n\nWe heard you need a password reset. Click the link below and you'll be redirected to a secure site from which you can set a new password:\n\n${url}\n\nIf you need additional assistance, or you did not make this change, please contact help@bikbox.com and we'll forget this ever happened.\n\nBikbox Team`, // plain text body
+    text: `Hello ${user.firstname},\n\nWe heard you need a password reset. Click the link below and you'll be redirected to a secure site = require(which you can set a new password:\n\n${url}\n\nIf you need additional assistance, or you did not make this change, please contact help@bikbox.com and we'll forget this ever happened.\n\nBikbox Team`, // plain text body
     html: `${resetPasswordEmail(user,url)}` // html body
   };
   return mailOptions;
@@ -62,4 +62,4 @@ const passwordChangedEmailPayload = (user)=>{
   return mailOptions;
 }
 
-export { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload };
+module.exports={ transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload };

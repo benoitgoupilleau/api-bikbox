@@ -1,11 +1,11 @@
-import express from 'express';
-import _ from 'lodash';
-import { ObjectID } from 'mongodb';
-import moment from 'moment';
+const express = require('express');
+const _ = require('lodash');
+const { ObjectID } = require('mongodb');
+const moment = require('moment');
 
-import Parking from './../models/parking';
-import { authenticate, authenticateAdmin, authenticateEntityManager } from './../middleware/authenticate';
-import constants from '../constants';
+const Parking = require('./../models/parking');
+const { authenticate, authenticateAdmin, authenticateEntityManager } = require('./../middleware/authenticate');
+const constants = require('../constants');
 
 const route = express.Router();
 
@@ -94,4 +94,4 @@ route.patch('/parking/:id', authenticateEntityManager, async (req, res) => {
   }
 })
 
-export default route;
+module.exports=route;

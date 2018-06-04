@@ -1,11 +1,11 @@
-import express from 'express';
-import _ from 'lodash';
-import { ObjectID } from 'mongodb';
-import moment from 'moment';
+const express = require('express');
+const _ = require('lodash');
+const { ObjectID } = require('mongodb');
+const moment = require('moment');
 
-import SessionBike from './../models/sessionBike';
-import { authenticate, authenticateAdmin, authenticateEntityManager, authenticateStation } from './../middleware/authenticate';
-import constants from '../constants';
+const SessionBike = require('./../models/sessionBike');
+const { authenticate, authenticateAdmin, authenticateEntityManager, authenticateStation } = require('./../middleware/authenticate');
+const constants = require('../constants');
 
 const route = express.Router();
 
@@ -75,4 +75,4 @@ route.patch('/sessionBike/:id', authenticateAdmin, async (req, res) => {
   }
 })
 
-export default route;
+module.exports=route;

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const SessionBike = mongoose.model('SessionBike', {
   _bike: {
@@ -19,4 +19,4 @@ const SessionBike = mongoose.model('SessionBike', {
   lastUpdatedDate: Number
 });
 
-export default SessionBike;
+module.exports=SessionBike;

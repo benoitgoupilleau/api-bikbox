@@ -1,12 +1,11 @@
-import "regenerator-runtime/runtime";
-import cluster from 'cluster';
-import os from 'os';
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import router from './controllers/controllers';
-import mongoose from './db/mongoose.js';
+const cluster = require('cluster');
+const os = require('os');
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const router = require('./controllers/controllers');
+const mongoose = require('./db/mongoose.js');
 
 const port = process.env.PORT || 3000;
 

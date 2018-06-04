@@ -3,4 +3,4 @@ const constants = {
   alertStatus: ['opened', 'read', 'progress', 'closed']
 }
 
-export default constants;
+module.exports=constants;

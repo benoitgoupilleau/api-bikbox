@@ -4,14 +4,12 @@
   "description": "",
   "main": "server/server.js",
   "scripts": {
-    "build": "rm -rf lib/* ; babel server/ -d lib --source-maps --ignore server/tests",
-    "start": "node lib/server.js",
+    "start": "node server/server.js",
     "startmongo": "sh mongo.sh",
-    "dev:watch": "source .env.dev && nodemon --exec 'babel-node server/server.js'",
-    "dev": "source .env.dev && babel-node server/server.js",
-    "test": "source .env.test && mocha server/**/*.test.js --compilers js:babel-register",
-    "test-watch": "nodemon --exec 'npm test'",
-    "heroku-postbuild": "yarn run build"
+    "dev:watch": "source .env.dev && nodemon --exec 'node server/server.js'",
+    "dev": "source .env.dev && node server/server.js",
+    "test": "source .env.test && mocha server/**/*.test.js",
+    "test-watch": "nodemon --exec 'npm test'"
   },
   "engines": {
     "node": "9.11.1",
@@ -20,8 +18,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
     "bcryptjs": "2.4.3",
     "body-parser": "1.18.3",
     "cors": "^2.8.4",
@@ -34,11 +30,9 @@
     "mongodb": "3.1.0-beta4",
     "mongoose": "5.1.1",
     "nodemailer": "4.6.4",
-    "regenerator-runtime": "^0.11.1",
     "validator": "10.2.0"
   },
   "devDependencies": {
-    "babel-register": "^6.26.0",
     "expect": "22.4.3",
     "mocha": "5.2.0",
     "nodemon": "1.17.4",

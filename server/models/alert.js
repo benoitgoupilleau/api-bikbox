@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import moment from 'moment';
-import constants from '../constants';
+const mongoose = require('mongoose');
+const moment = require('moment');
+const constants = require('../constants');
 
 const AlertSchema = new mongoose.Schema({
   name: {
@@ -48,4 +48,4 @@ AlertSchema.pre('save', function (next) {
 
 const Alert = mongoose.model('Alert', AlertSchema)
 
-export default Alert;
+module.exports=Alert;

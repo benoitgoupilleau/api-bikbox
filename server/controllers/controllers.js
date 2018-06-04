@@ -1,12 +1,12 @@
-import express from 'express';
+const express = require('express');
 
-import users from './users';
-import entities from './entities';
-import parkings from './parkings';
-import stations from './stations';
-import bikes from './bikes';
-import sessionBikes from './sessionBikes';
-import sessionPlaces from './sessionPlaces';
+const users = require('./users');
+const entities = require('./entities');
+const parkings = require('./parkings');
+const stations = require('./stations');
+const bikes = require('./bikes');
+const sessionBikes = require('./sessionBikes');
+const sessionPlaces = require('./sessionPlaces');
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router.use(sessionBikes);
 router.use(sessionPlaces);
 
 router.get('/', async (req, res) => {
-  res.status(200).send(`Hello from the API Bik'Box ${JSON.stringify(req.hostname)}`)
+  res.status(200).send(`Hello = require(the API Bik'Box ${JSON.stringify(req.hostname)}`)
 });
 
-export default router;
+module.exports=router;

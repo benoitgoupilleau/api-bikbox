@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const Sensor = mongoose.model('Sensor', {
   identifier: {
@@ -29,4 +29,4 @@ const Sensor = mongoose.model('Sensor', {
   lastUpdatedDate: Number
 });
 
-export default Sensor;
+module.exports=Sensor;

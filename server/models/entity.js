@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const Entity = mongoose.model('Entity', {
   name: {
@@ -19,4 +19,4 @@ const Entity = mongoose.model('Entity', {
   lastUpdatedDate: Number
 });
 
-export default Entity;
+module.exports=Entity;

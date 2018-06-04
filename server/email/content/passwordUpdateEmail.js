@@ -137,4 +137,4 @@ const passwordUpdateEmail = (user)=>{
     </html>`
 )};
 
-export default passwordUpdateEmail;
+module.exports=passwordUpdateEmail;

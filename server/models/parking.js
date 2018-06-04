@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const Parking = mongoose.model('Parking', {
   name: {
@@ -25,4 +25,4 @@ const Parking = mongoose.model('Parking', {
   lastUpdatedDate: Number
 });
 
-export default Parking;
+module.exports=Parking;
