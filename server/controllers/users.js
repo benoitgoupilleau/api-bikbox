@@ -32,12 +32,13 @@ route.post('/adminusers/bikbox', knownInstance, async (req, res) => {
     })
     await personalInfo.save();
 
-    const user = await User.create({
+    const user = await new User({
       _id: personalInfo._id,
       _entity: body._entity,
       userType: constants.userType[0],
       createdAt: moment()
-    });
+    }).save();
+    res.status(200).send(user);
   } catch (e) {
     console.log(e)
     res.status(400).send();
