@@ -4,10 +4,24 @@ const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
 const Entity = require('./../models/entity');
-const { authenticate, authenticateAdmin, authenticateEntityManager } = require('./../middleware/authenticate');
+const { authenticate, authenticateAdmin, authenticateEntityManager, knownInstance } = require('./../middleware/authenticate');
 const constants = require('../constants');
 
 const route = express.Router();
+
+route.post('/entity', knownInstance, (req, res) => {
+  const body = _.pick(req.body, ['name', 'description', 'createdAt']);
+  const entity = new Entity({
+    name: body.name,
+    description: body.description,
+    createdAt: moment(body.createdAt) && moment()
+  })
+  entity.save().then((doc) => {
+    res.send(doc);
+  }, () => {
+    res.status(400).send();
+  })
+});
 
 route.post('/entity', authenticateAdmin, (req, res) => {
   const body = _.pick(req.body, ['name', 'description', 'createdAt']);

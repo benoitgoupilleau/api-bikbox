@@ -9,8 +9,40 @@ const User = require('./../models/user');
 const PersonalInfo = require('./../models/personalInfo');
 const { authenticate, authenticateAdmin, knownInstance } = require('./../middleware/authenticate');
 const { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload } = require('./../email/mailconfig');
+const constants = require('../constants');
 
 const route = express.Router();
+
+// #### route to add a basic user
+
+route.post('/adminusers', knownInstance, async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['email', '_entity' ]);
+
+    const password = generator.generate({
+      length: 8,
+      numbers: true,
+      symbols: true,
+      uppercase: true,
+      strict: true
+    });
+    const personalInfo = new PersonalInfo({
+      email: body.email,
+      password
+    })
+    await personalInfo.save();
+
+    const user = await User.create({
+      _id: personalInfo._id,
+      _entity: body._entity,
+      userType: constants.userType[0],
+      createdAt: moment()
+    });
+  } catch (e) {
+    console.log(e)
+    res.status(400).send();
+  }
+});
 
 //****** Admin USER endpoints ***************************
 // ok
