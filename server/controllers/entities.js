@@ -9,7 +9,7 @@ const constants = require('../constants');
 
 const route = express.Router();
 
-route.post('/entity', knownInstance, (req, res) => {
+route.post('/entity/bikbox', knownInstance, (req, res) => {
   const body = _.pick(req.body, ['name', 'description', 'createdAt']);
   const entity = new Entity({
     name: body.name,

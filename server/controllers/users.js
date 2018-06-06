@@ -15,7 +15,7 @@ const route = express.Router();
 
 // #### route to add a basic user
 
-route.post('/adminusers', knownInstance, async (req, res) => {
+route.post('/adminusers/bikbox', knownInstance, async (req, res) => {
   try {
     const body = _.pick(req.body, ['email', '_entity' ]);
 
