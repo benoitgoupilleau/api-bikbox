@@ -27,8 +27,8 @@ const authenticateAdmin = (req, res, next) => {
     req.user = user;
     req.token = token;
     next();
-  }).catch((e) => {
-    res.status(403).send(e);
+  }).catch(() => {
+    res.sendStatus(403)
   });
 };
 
