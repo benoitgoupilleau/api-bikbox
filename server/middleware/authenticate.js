@@ -1,5 +1,5 @@
 const User = require('./../models/user');
-const Sensor = require('./../models/sensor');
+const Station = require('./../models/station');
 const constants = require('../constants');
 
 const authenticate = (req, res,next) => {
@@ -27,7 +27,7 @@ const authenticateAdmin = (req, res, next) => {
     req.user = user;
     req.token = token;
     next();
-  }).catch(() => {
+  }).catch((e) => {
     res.status(403).send(e);
   });
 };
@@ -48,14 +48,13 @@ const authenticateEntityManager = (req, res, next) => {
 };
 
 const authenticateStation = (req, res, next) => {
-  const token = req.header('x-auth');
+  const identifier = req.header('x-auth');
 
-  Station.findByToken(token).then((station) => {
+  Station.findOne({ identifier, active: true }).then((station) => {
     if (!station) {
       return Promise.reject();
     }
     req.station = station;
-    req.token = token;
     next();
   }).catch(() => {
     res.status(403).send();

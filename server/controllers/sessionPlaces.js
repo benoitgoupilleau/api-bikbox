@@ -16,19 +16,25 @@ route.post('/sessionPlace', authenticateStation, async (req, res) => {
     if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
       throw 'No sessionPlaces array'
     }
-    const sessions = [];
+    const sessionsToSave = [];
+    const failedSessions = []
     for (let i = 0; i < sessionPlaces.length; i += 1) {
       const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
-      if (!sensor) throw 'No sensor found'
-      sessions.push(new SessionPlace({
-        _sensor: sensor._id, // identifier du capteur
-        startDate: sessionPlaces[i].startDate,
-        endDate: sessionPlaces[i].endDate,
-        createdAt: moment()
-      }).save());
+      if (sensor) {
+        sessionsToSave.push({
+          _sensor: sensor._id,
+          startDate: sessionPlaces[i].startDate,
+          endDate: sessionPlaces[i].endDate,
+          createdAt: moment()
+        });
+      } else {
+        failedSessions.push({
+          identifier: sessionPlaces[i].identifier
+        })
+      }
     }
-    await Promise.all(sessions);
-    res.status(200).send(sessions);
+    const sessions = await SessionPlace.insertMany(sessionsToSave, { ordered: false })
+    res.status(200).send({ sessions, failedSessions });
   } catch (err) {
     res.status(400).send(err);
   }
