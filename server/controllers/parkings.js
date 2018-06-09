@@ -11,6 +11,7 @@ const route = express.Router();
 
 route.post('/parking', authenticateAdmin, (req, res) => {
   const body = _.pick(req.body, ['name', 'description', 'address', '_entity', 'createdAt']);
+  console.log(body)
   const parking = new Parking({
     name: body.name,
     description: body.description,
