@@ -20,7 +20,7 @@ route.post('/parking', authenticateAdmin, (req, res) => {
   })
   parking.save().then((doc) => {
     res.send(doc);
-  }, (e) => {
+  }).catch((e) => {
     res.status(400).send(e);
   })
 });
