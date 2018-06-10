@@ -22,8 +22,8 @@ route.post('/sensor', authenticateAdmin, (req, res) => {
   })
   sensor.save().then((doc) => {
     res.send(doc);
-  }, () => {
-    res.status(400).send();
+  }, (e) => {
+    res.status(400).send(e);
   })
 });
 

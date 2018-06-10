@@ -88,11 +88,9 @@ UserSchema.methods.generatePasswordToken = async function () {
 UserSchema.statics.findByToken = function (token, userType){
   const User = this;
   let decoded;
-  console.log({token, userType})
   try {
     decoded = jwt.verify(token, process.env.TOKEN_JWT_SECRET_TOKEN);
   } catch(e) {
-    console.log(e)
     return Promise.reject(400);
   }
 
