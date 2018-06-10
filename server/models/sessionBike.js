@@ -6,6 +6,11 @@ const SessionBike = mongoose.model('SessionBike', {
     required: true,
     ref: 'Bike'
   },
+  _entity: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Entity'
+  },
   startDate: {
     type: Number,
     required: true

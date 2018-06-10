@@ -23,6 +23,7 @@ route.post('/sessionPlace', authenticateStation, async (req, res) => {
       if (sensor) {
         sessionsToSave.push({
           _sensor: sensor._id,
+          _entity: req.station._entity,
           startDate: sessionPlaces[i].startDate,
           endDate: sessionPlaces[i].endDate,
           createdAt: moment()
@@ -40,16 +41,13 @@ route.post('/sessionPlace', authenticateStation, async (req, res) => {
   }
 });
 
-route.get('/sessionPlaces', authenticate, (req, res) => {
-  SessionPlace.find({}).then((sessionPlaces) => {
-    let filteredSessionPlaces = sessionPlaces; 
-    // if (req.user.userType === constants.userType[1]) {
-    //   filteredSessionPlaces = sessionPlaces.filter((sessionPlace) => user._entity.includes(sessionPlace._id))
-    // }
-    res.send(filteredSessionPlaces);
-  }, () => {
-    res.status(400).send();
-  })
+route.get('/sessionPlaces', authenticate, async (req, res) => {
+  try {
+    const sessionPlaces = await SessionPlace.find({ active: true, _entity: { $in: req.user._entity } })
+    res.send(sessionPlaces);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 route.get('/sessionPlace/:id', authenticate, (req, res) => {

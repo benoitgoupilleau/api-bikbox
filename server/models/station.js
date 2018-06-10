@@ -17,6 +17,11 @@ const Station = mongoose.model('Station', {
     required: true,
     ref: 'Parking'
   },
+  _entity: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Entity'
+  },
   firmwareVersion: String,
   lastChangedBattery: {
     type: Number,

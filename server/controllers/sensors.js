@@ -10,10 +10,11 @@ const constants = require('../constants');
 const route = express.Router();
 
 route.post('/sensor', authenticateAdmin, (req, res) => {
-  const body = _.pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt']);
+  const body = _.pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', 'entity']);
   const sensor = new Sensor({
     identifier: body.identifier,
     _station: body._station,
+    _entity: body._entity,
     firmwareVersion: body.firmwareVersion,
     voltage: body.voltage,
     lastChangedBattery: body.lastChangedBattery,
@@ -26,16 +27,13 @@ route.post('/sensor', authenticateAdmin, (req, res) => {
   })
 });
 
-route.get('/sensors', authenticateEntityManager, (req, res) => {
-  Sensor.find({ active: true }).then((sensors) => {
-    let filteredSensors = sensors; 
-    if (req.user.userType === constants.userType[1]) {
-      filteredSensors = sensors.filter((sensor) => user._entity.includes(sensor._id))
-    }
-    res.send(filteredSensors);
-  }, () => {
-    res.status(400).send();
-  })
+route.get('/sensors', authenticateEntityManager, async (req, res) => {
+  try {
+    const sensors = await Sensor.find({ active: true, _entity: { $in: req.user._entity } })
+    res.send(sensors);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 route.get('/sensor/:id', authenticate, (req, res) => {

@@ -10,11 +10,12 @@ const constants = require('../constants');
 const route = express.Router();
 
 route.post('/station', authenticateAdmin, (req, res) => {
-  const body = _.pick(req.body, ['name', 'identifier', '_parking', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt']);
+  const body = _.pick(req.body, ['name', 'identifier', '_parking', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', '_entity']);
   const station = new Station({
     name: body.name,
     identifier: body.identifier,
     _parking: body._parking,
+    _entity: body._entity,
     firmwareVersion: body.firmwareVersion,
     voltage: body.voltage,
     lastChangedBattery: body.lastChangedBattery,
@@ -27,16 +28,13 @@ route.post('/station', authenticateAdmin, (req, res) => {
   })
 });
 
-route.get('/stations', authenticateEntityManager, (req, res) => {
-  Station.find({ active: true }).then((stations) => {
-    let filteredStations = stations; 
-    if (req.user.userType === constants.userType[1]) {
-      filteredStations = stations.filter((station) => user._entity.includes(station._id))
-    }
-    res.send(filteredStations);
-  }, () => {
-    res.status(400).send();
-  })
+route.get('/stations', authenticateEntityManager, async (req, res) => {
+  try {
+    const stations = await Station.find({ active: true, _entity: { $in: req.user._entity } })
+    res.send(stations);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 route.get('/station/:id', authenticate, (req, res) => {

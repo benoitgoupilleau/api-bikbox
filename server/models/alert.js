@@ -28,6 +28,11 @@ const AlertSchema = new mongoose.Schema({
     required: true,
     ref: 'Station'
   },
+  _entity: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Entity'
+  },
   _sensor: {
     type: mongoose.Schema.Types.ObjectId,
     default: null,

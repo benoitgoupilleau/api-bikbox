@@ -14,6 +14,7 @@ route.post('/sessionBike', authenticateStation, (req, res) => {
   const sessionBike = new SessionBike({
     _bike: body._bike,
     startDate: body.startDate,
+    _entity: req.station._entity,
     endDate: body.endDate,
     createdAt: moment()
   })
@@ -24,16 +25,13 @@ route.post('/sessionBike', authenticateStation, (req, res) => {
   })
 });
 
-route.get('/sessionBikes', authenticate, (req, res) => {
-  SessionBike.find({}).then((sessionBikes) => {
-    let filteredSessionBikes = sessionBikes; 
-    // if (req.user.userType === constants.userType[1]) {
-    //   filteredSessionBikes = sessionBikes.filter((sessionBike) => user._entity.includes(sessionBike._id))
-    // }
-    res.send(filteredSessionBikes);
-  }, () => {
-    res.status(400).send();
-  })
+route.get('/sessionBikes', authenticate, async (req, res) => {
+  try {
+    const sessionBikes = await SessionBike.find({ active: true, _entity: { $in: req.user._entity } })
+    res.send(sessionBikes);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 route.get('/sessionBike/:id', authenticate, (req, res) => {

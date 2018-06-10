@@ -15,6 +15,7 @@ route.post('/alert', authenticateStation, (req, res) => {
     name: body.name,
     description: body.description,
     _station: req.station._id,
+    _entity: req.station._entity,
     _sensor: body._sensor,
     _user: body._user,
     createdAt: moment(body.createdAt) && moment()
@@ -26,13 +27,13 @@ route.post('/alert', authenticateStation, (req, res) => {
   })
 });
 
-route.get('/alerts', authenticateAdmin, (req, res) => {
-  Alert.find({}).then((alerts) => {
-    let filteredAlerts = alerts; 
-    res.send(filteredAlerts);
-  }, () => {
-    res.status(400).send();
-  })
+route.get('/alerts', authenticateAdmin, async (req, res) => {
+  try {
+    const alerts = await Alert.find({ _entity: { $in: req.user._entity } })
+    res.send(alerts);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 route.get('/alert/:id', authenticateAdmin, (req, res) => {

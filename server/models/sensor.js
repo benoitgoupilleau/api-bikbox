@@ -10,6 +10,11 @@ const Sensor = mongoose.model('Sensor', {
     required: true,
     ref: 'Station'
   },
+  _entity: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Entity'
+  },
   firmwareVersion: String,
   lastChangedBattery: {
     type: Number,

@@ -24,16 +24,13 @@ route.post('/bike', authenticateAdmin, (req, res) => {
   })
 });
 
-route.get('/bikes', authenticateEntityManager, (req, res) => {
-  Bike.find({ active: true }).then((bikes) => {
-    let filteredBikes = bikes; 
-    if (req.user.userType === constants.userType[1]) {
-      filteredBikes = bikes.filter((bike) => user._entity.includes(bike._id))
-    }
-    res.send(filteredBikes);
-  }, () => {
-    res.status(400).send();
-  })
+route.get('/bikes', authenticateEntityManager, async (req, res) => {
+  try {
+    const bikes = await Bike.find({ active: true, _entity: { $in: req.user._entity } })
+    res.send(bikes);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 route.get('/bike/:id', authenticate, (req, res) => {

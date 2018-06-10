@@ -19,7 +19,7 @@ const authenticate = (req, res,next) => {
 
 const authenticateAdmin = (req, res, next) => {
   const token = req.header('x-auth');
-
+  
   User.findByToken(token, [constants.userType[2]]).then((user) => {
     if (!user) {
       return Promise.reject();

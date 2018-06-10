@@ -6,6 +6,11 @@ const SessionPlaceSchema = new mongoose.Schema({
     required: true,
     ref: 'Sensor'
   },
+  _entity: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Entity'
+  },
   startDate: {
     type: Number,
     required: true

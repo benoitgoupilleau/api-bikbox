@@ -27,16 +27,13 @@ route.post('/parking', authenticateAdmin, (req, res) => {
   })
 });
 
-route.get('/parkings', authenticate, (req, res) => {
-  Parking.find({ active: true }).then((parkings) => {
-    let filteredParkings = parkings; 
-    if (req.user.userType !== constants.userType[2]) {
-      filteredParkings = parkings.filter((parking) => user._entity.includes(parking._entity))
-    }
-    res.send(filteredParkings);
-  }, () => {
-    res.status(400).send();
-  })
+route.get('/parkings', authenticate, async (req, res) => {
+  try {
+    const parkings = await Parking.find({ active: true, _entity: { $in: req.user._entity } })
+    res.send(parkings);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 route.get('/parking/:id', authenticate, (req, res) => {
