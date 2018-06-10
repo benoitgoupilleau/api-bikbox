@@ -22,7 +22,7 @@ route.post('/sessionPlace', authenticateStation, async (req, res) => {
       const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
       if (sensor) {
         sessionsToSave.push({
-          _sensor: sensor._id,
+          identifier: sessionPlaces[i].identifier,
           _entity: req.station._entity,
           startDate: sessionPlaces[i].startDate,
           endDate: sessionPlaces[i].endDate,

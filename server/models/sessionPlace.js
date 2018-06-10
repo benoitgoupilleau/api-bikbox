@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const SessionPlaceSchema = new mongoose.Schema({
-  _sensor: {
-    type: mongoose.Schema.Types.ObjectId,
+  identifier: {
+    type: String,
     required: true,
     ref: 'Sensor'
   },
@@ -21,6 +21,13 @@ const SessionPlaceSchema = new mongoose.Schema({
   createdAt: Number,
   lastUpdatedDate: Number
 });
+
+SessionPlaceSchema.methods.toJSON = function () {
+  const sessionPlace = this;
+  const sessionPlaceObject = sessionPlace.toObject();
+
+  return _.pick(sessionPlaceObject, ['_id', 'identifier', 'startDate', 'endDate'])
+};
 
 SessionPlaceSchema.index({ _sensor: 1, startDate: 1 }, { unique: true })
 

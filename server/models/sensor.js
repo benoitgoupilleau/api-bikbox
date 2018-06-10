@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const Sensor = mongoose.model('Sensor', {
   identifier: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   _station: {
     type: mongoose.Schema.Types.ObjectId,
