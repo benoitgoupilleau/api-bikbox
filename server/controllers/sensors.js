@@ -10,7 +10,7 @@ const constants = require('../constants');
 const route = express.Router();
 
 route.post('/sensor', authenticateAdmin, (req, res) => {
-  const body = _.pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', 'entity']);
+  const body = _.pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', '_entity']);
   const sensor = new Sensor({
     identifier: body.identifier,
     _station: body._station,
