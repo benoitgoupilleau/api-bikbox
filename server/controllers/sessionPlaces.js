@@ -21,20 +21,20 @@ route.post('/sessionPlace', authenticateStation, async (req, res) => {
     for (let i = 0; i < sessionPlaces.length; i += 1) {
       const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
       if (sensor) {
-        sessionsToSave.push({
+        sessionsToSave.push(new SessionPlace({
           identifier: sessionPlaces[i].identifier,
           _entity: req.station._entity,
           startDate: sessionPlaces[i].startDate,
           endDate: sessionPlaces[i].endDate,
           createdAt: moment()
-        });
+        }).save());
       } else {
         failedSessions.push({
           identifier: sessionPlaces[i].identifier
         })
       }
     }
-    const sessions = await SessionPlace.insertMany(sessionsToSave, { ordered: false })
+    const sessions = await Promise.all(sessionsToSave)
     res.status(200).send({ sessions, failedSessions });
   } catch (err) {
     res.status(400).send(err);
