@@ -10,7 +10,7 @@ const constants = require('../constants');
 
 const route = express.Router();
 
-route.post('/sessionPlace', authenticateStation, async (req, res) => {
+route.post('/station/sessionPlace', authenticateStation, async (req, res) => {
   try {
     const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces; // faire pour plusieurs capteurs
     if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
@@ -72,14 +72,14 @@ route.get('/sessionPlace/:id', authenticate, (req, res) => {
 route.patch('/sessionPlace/:id', authenticateAdmin, async (req, res) => { // faire ensemble de session
   try {
     const id = req.params.id;
-    const body = _.pick(req.body, ['_sensor', 'endDate']);
+    const body = _.pick(req.body, ['identifier', 'endDate']);
 
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();
     }
     body.lastUpdatedDate = moment()
 
-    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id }, { $set: body }, { new: true })
+    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id, identifier: body.identifier }, { $set: { endDate: body.endDate } }, { new: true })
     if (!sessionPlace) {
       throw new Error();
     }
@@ -88,5 +88,26 @@ route.patch('/sessionPlace/:id', authenticateAdmin, async (req, res) => { // fai
     res.status(400).send();
   }
 })
+
+route.patch('/station/sessionPlace', authenticateStation, async (req, res) => {
+  try {
+    const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces;
+    if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
+      throw 'No sessionPlaces array'
+    }
+    const sessions = []
+    const failedSessions = []
+    for (let i = 0; i < sessionPlaces.length; i += 1) {
+      const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: sessionPlaces[i]._id, identifier: sessionPlaces[i].identifier }, { $set: { endDate: sessionPlaces[i].endDate } }, { new: true })
+      if (!sessionPlace) {
+        failedSessions.push(sessionPlaces[i])
+      }
+      sessions.push(sessionPlace);
+    }
+    res.status(200).send({ sessions, failedSessions });
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
 
 module.exports=route;
