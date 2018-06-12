@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
+const uuidv4 = require('uuid/v4');
 const _ = require('lodash');
-const bcrypt = require('bcryptjs');
 const constants = require('../constants');
 
 const UserSchema= new mongoose.Schema({
@@ -25,9 +25,13 @@ const UserSchema= new mongoose.Schema({
     type: Number,
     required: true
   },
-  resetpasswordtoken:{
-    default: true,
-    type: Boolean
+  resetPassword:{
+    token: {
+      type: String,
+    },
+    expiresIn: {
+      type: Number
+    }
   },
   tokens: [{
     access: {
@@ -77,10 +81,12 @@ UserSchema.methods.removeToken = function (token) {
 // ok 
 UserSchema.methods.generatePasswordToken = async function () {
   const user = this;
-  const access = 'password';
-  const token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.TOKEN_JWT_SECRET_PASSWORD, { expiresIn: process.env.TOKEN_DURATION_PASSWORD }).toString()
+  const token = uuidv4()
 
-  user.resetpasswordtoken = true;
+  user.resetPassword = {
+    token,
+    expiresIn: moment().add(process.env.TOKEN_DURATION_PASSWORD, 'hours')
+  };
   await user.save();
   return token;
 };

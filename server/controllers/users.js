@@ -132,45 +132,51 @@ route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
 });
 
 // route to redirect to screen allowing to update the password
-route.get('/adminusers/resetpassword/:token', (req, res) => {
-  jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, (err, decoded) => {
-    if(err){
-      return res.status(400).send(err.message)
+route.get('/adminusers/resetpassword/:token', async (req, res) => {
+  try {
+    const timeNow = moment();
+    console.log(timeNow)
+    const user = await User.findOne({ 'resetPassword.token': req.params.token })
+    if (!user) {
+      return res.status(401).send()
+    }
+    if (moment(user.resetPassword.expiresIn) > moment()) {
+      return res.status(404).send('Token has expired');
     }
     return res.redirect(`${process.env.WEB_URL}/resetpassword/${req.params.token}`);
-  })
+  } catch (e) {
+    return res.status(400).send(e)
+  }
 })
 
 // finale route to save the new password
 route.post('/adminusers/resetpassword/:token', async (req, res) => {
-  const password = _.pick(req.body, ['password']).password;
-  jwt.verify(req.params.token, process.env.TOKEN_JWT_SECRET_PASSWORD, async (err, decoded) => {
-    if(err){
-      console.log(err)
-      return res.status(400).send(err)
-    }
-
-    const user = await User.findOne({ _id: decoded._id, resetpasswordtoken: true})
-    if(!user){
+  try {
+    const password = _.pick(req.body, ['password']).password;
+    const user = await User.findOne({ 'resetPassword.token': req.params.token })
+    if (!user) {
       return res.status(404).send('No user');
+    }
+    if (moment(user.resetPassword.expiresIn) < moment()){
+      return res.status(404).send('Token has expired');
     }
     const personalInfo = await PersonalInfo.findById(user._id);
     if (!personalInfo) {
       return res.status(404).send('No info');
     }
+    user.resetPassword = {};
     personalInfo.password = password;
     await personalInfo.save();
-
-    user.resetpasswordtoken=false;
-    user.save().then(() => {
-      transporter.sendMail(passwordChangedEmailPayload(personalInfo.email), (err, info) => {
-        if(err){
-          return res.status(502).send()
-        }
-        return res.status(200).send()
-      })
+    await user.save();
+    transporter.sendMail(passwordChangedEmailPayload(personalInfo.email), (err, info) => {
+      if (err) {
+        return res.status(502).send()
+      }
+      return res.status(200).send()
     })
-  })
+  } catch (error) {
+    return res.status(400).send(error)
+  }
 })
 
 module.exports=route;
