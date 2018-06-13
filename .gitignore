@@ -3,3 +3,5 @@ node_modules/
 mongo.sh
 API.sh
 lib/
+logs/combined.log
+logs/error.log
