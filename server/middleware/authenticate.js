@@ -1,6 +1,7 @@
 const User = require('./../models/user');
 const Station = require('./../models/station');
 const constants = require('../constants');
+const logger = require('../helpers/logger');
 
 const authenticate = (req, res,next) => {
   const token = req.header('x-auth');
@@ -11,6 +12,7 @@ const authenticate = (req, res,next) => {
     }
     req.user= user;
     req.token =token;
+    loger.info(`authenticate: ${user._id}`)
     next();
   }).catch(()=>{
     res.status(403).send();
@@ -26,6 +28,7 @@ const authenticateAdmin = (req, res, next) => {
     }
     req.user = user;
     req.token = token;
+    loger.info(`authenticateAdmin: ${user._id}`)
     next();
   }).catch(() => {
     res.sendStatus(403)
@@ -41,6 +44,7 @@ const authenticateEntityManager = (req, res, next) => {
     }
     req.user = user;
     req.token = token;
+    loger.info(`authenticateEntityManager: ${user._id}`)
     next();
   }).catch(() => {
     res.status(403).send();
@@ -55,6 +59,7 @@ const authenticateStation = (req, res, next) => {
       return Promise.reject();
     }
     req.station = station;
+    loger.info(`authenticateStation: ${station._id}`)
     next();
   }).catch(() => {
     res.status(403).send();
@@ -64,6 +69,7 @@ const authenticateStation = (req, res, next) => {
 const knownInstance = (req, res, next) => {
   const token = req.header('x-key');
   if (token && token === process.env.X_KEY) {
+    loger.info('knownInstance')
     next();
   } else {
     res.status(403).send();

@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+const logger = require('../helpers/logger');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_URI).then(connection => {
-    console.log('Connected to MongoDB')
+    logger.info('Connected to MongoDB')
   }).catch(error => {
-    console.log(error.message, process.env.MONGODB_URI)
+    logger.error(error.message, process.env.MONGODB_URI)
   });
 
 module.exports=mongoose;

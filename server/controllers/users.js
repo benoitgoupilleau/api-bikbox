@@ -1,7 +1,6 @@
 const express = require('express');
+const url = require('url');
 const _ = require('lodash');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const moment = require('moment');
 const generator = require('generate-password');
 
@@ -10,6 +9,8 @@ const PersonalInfo = require('./../models/personalInfo');
 const { authenticate, authenticateAdmin, knownInstance } = require('./../middleware/authenticate');
 const { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload } = require('./../email/mailconfig');
 const constants = require('../constants');
+
+const logger = require('../helpers/logger');
 
 const route = express.Router();
 
@@ -75,13 +76,12 @@ route.post('/adminusers', authenticateAdmin, async (req, res) => {
     const url = `${process.env.API_URL}/adminusers/resetpassword/${token}`;
     transporter.sendMail(welcomeEmailPayload(body.email, url), (err, info) => {
       if (err) {
-        console.log({err, info})
-        return res.status(502).send(err)
+        logger.error(err)
       }
-      return res.status(200).send(user)
+      logger.info(info);
     })
+    return res.status(200).send(user)
   } catch (e) {
-    console.log(e)
     res.status(400).send();
   }
 });
@@ -122,10 +122,11 @@ route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
     const url = `${process.env.API_URL}/adminusers/resetpassword/${token}`;
     transporter.sendMail(resetPasswordEmailPayload(personalInfo.email, url), (err, info) => {
       if (err) {
-        return res.status(502).send(err)
+        logger.error(err)
       }
-      return res.status(200).send()
+      logger.info(info);
     })
+    return res.status(200).send(user)
   } catch (error) {
     return res.status(400).send(error)
   }
@@ -138,14 +139,23 @@ route.get('/adminusers/resetpassword/:token', async (req, res) => {
     console.log(timeNow)
     const user = await User.findOne({ 'resetPassword.token': req.params.token })
     if (!user) {
-      return res.status(401).send()
+      return res.redirect(url.format({
+        pathname: `${process.env.WEB_URL}/notfound`,
+        hash: 'nouser'
+      }))
     }
     if (moment(user.resetPassword.expiresIn) > moment()) {
-      return res.status(404).send('Token has expired');
+      return res.redirect(url.format({
+        pathname: `${process.env.WEB_URL}/notfound`,
+        hash: 'expired',
+      }))
     }
     return res.redirect(`${process.env.WEB_URL}/resetpassword/${req.params.token}`);
   } catch (e) {
-    return res.status(400).send(e)
+    return res.redirect(url.format({
+      pathname: `${process.env.WEB_URL}/notfound`,
+      hash: 'badrequest',
+    }))
   }
 })
 
@@ -170,10 +180,11 @@ route.post('/adminusers/resetpassword/:token', async (req, res) => {
     await user.save();
     transporter.sendMail(passwordChangedEmailPayload(personalInfo.email), (err, info) => {
       if (err) {
-        return res.status(502).send()
+        logger.error(err)
       }
-      return res.status(200).send()
+      logger.info(info);
     })
+    return res.status(200).send()
   } catch (error) {
     return res.status(400).send(error)
   }
