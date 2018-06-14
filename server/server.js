@@ -1,5 +1,5 @@
+const Raven = require('raven');
 if (process.env.NODE_ENV === 'production') {
-  const Raven = require('raven');
   Raven.config(process.env.SENTRY_DSN).install();
 }
 
