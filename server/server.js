@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV === 'production') {
+  const Raven = require('raven');
+  Raven.config('https://d2a4a1d3e39b4384ba7429f4b9c1fb56@sentry.io/293271').install();
+}
+
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
