@@ -17,8 +17,10 @@ const port = process.env.PORT || 3000;
 const morganFormat = ':remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
 
 const app = express();
-app.use(Raven.requestHandler());
-app.use(Raven.errorHandler());
+if (process.env.NODE_ENV === 'production') {
+  app.use(Raven.requestHandler());
+  app.use(Raven.errorHandler());
+}
 app.use(helmet());
 app.use(cors());
 app.use(morgan(morganFormat, { stream: logger.stream }))

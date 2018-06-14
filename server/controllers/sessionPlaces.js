@@ -10,7 +10,7 @@ const constants = require('../constants');
 
 const route = express.Router();
 
-route.post('/station/sessionPlace', authenticateStation, async (req, res) => {
+route.post('/stationSessionPlace', authenticateStation, async (req, res) => {
   try {
     const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces; // faire pour plusieurs capteurs
     if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
@@ -89,7 +89,7 @@ route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // fa
   }
 })
 
-route.patch('/station/sessionPlace', authenticateStation, async (req, res) => {
+route.patch('/stationSessionPlace', authenticateStation, async (req, res) => {
   try {
     const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces;
     if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
