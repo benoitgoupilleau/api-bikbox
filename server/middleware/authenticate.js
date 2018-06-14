@@ -12,9 +12,10 @@ const authenticate = (req, res,next) => {
     }
     req.user= user;
     req.token =token;
-    loger.info(`authenticate: ${user._id}`)
+    logger.info(`authenticate: ${user._id}`)
     next();
-  }).catch(()=>{
+  }).catch((e)=>{
+    logger.warn(`authenticate: 403 ${e}`)
     res.status(403).send();
   });
 };
@@ -28,9 +29,10 @@ const authenticateAdmin = (req, res, next) => {
     }
     req.user = user;
     req.token = token;
-    loger.info(`authenticateAdmin: ${user._id}`)
+    logger.info(`authenticateAdmin: ${user._id}`)
     next();
-  }).catch(() => {
+  }).catch((e) => {
+    logger.warn(`authenticateAdmin: 403 ${e}`)
     res.sendStatus(403)
   });
 };
@@ -44,9 +46,10 @@ const authenticateEntityManager = (req, res, next) => {
     }
     req.user = user;
     req.token = token;
-    loger.info(`authenticateEntityManager: ${user._id}`)
+    logger.info(`authenticateEntityManager: ${user._id}`)
     next();
-  }).catch(() => {
+  }).catch((e) => {
+    logger.warn(`authenticateEntityManager: 403 ${e}`)
     res.status(403).send();
   });
 };
@@ -59,9 +62,10 @@ const authenticateStation = (req, res, next) => {
       return Promise.reject();
     }
     req.station = station;
-    loger.info(`authenticateStation: ${station._id}`)
+    logger.info(`authenticateStation: ${station._id}`)
     next();
-  }).catch(() => {
+  }).catch((e) => {
+    logger.warn(`authenticateStation: 403 ${e}`)
     res.status(403).send();
   });
 };
@@ -69,9 +73,10 @@ const authenticateStation = (req, res, next) => {
 const knownInstance = (req, res, next) => {
   const token = req.header('x-key');
   if (token && token === process.env.X_KEY) {
-    loger.info('knownInstance')
+    logger.info('knownInstance')
     next();
   } else {
+    logger.warn('knownInstance: 403')
     res.status(403).send();
   }
 }

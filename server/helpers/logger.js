@@ -25,7 +25,7 @@ const logger = createLogger({
 
 logger.stream = {
   write: function (message, encoding) {
-    logger.info(message);
+    logger.info(message.substring(0, message.lastIndexOf('\n')));
   },
 };
 
