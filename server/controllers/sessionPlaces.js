@@ -50,7 +50,7 @@ route.get('/sessionPlaces', authenticate, async (req, res) => {
   }
 });
 
-route.get('/sessionPlace/:id', authenticate, (req, res) => {
+route.get('/sessionPlaces/:id', authenticate, (req, res) => {
   const id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
@@ -69,7 +69,7 @@ route.get('/sessionPlace/:id', authenticate, (req, res) => {
   })
 });
 
-route.patch('/sessionPlace/:id', authenticateAdmin, async (req, res) => { // faire ensemble de session
+route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // faire ensemble de session
   try {
     const id = req.params.id;
     const body = _.pick(req.body, ['identifier', 'endDate']);
