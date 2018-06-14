@@ -10,7 +10,7 @@ const constants = require('../constants');
 
 const route = express.Router();
 
-route.post('/stationSessionPlace', authenticateStation, async (req, res) => {
+route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
   try {
     const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces; // faire pour plusieurs capteurs
     if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
@@ -21,13 +21,22 @@ route.post('/stationSessionPlace', authenticateStation, async (req, res) => {
     for (let i = 0; i < sessionPlaces.length; i += 1) {
       const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
       if (sensor) {
-        sessionsToSave.push(new SessionPlace({
-          identifier: sessionPlaces[i].identifier,
-          _entity: req.station._entity,
-          startDate: sessionPlaces[i].startDate,
-          endDate: sessionPlaces[i].endDate,
-          createdAt: moment()
-        }).save());
+        const sessionPlace = await SessionPlace.findOne({ identifier: sessionPlaces[i].identifier, startDate: sessionPlaces[i].startDate})
+        if (sessionPlace) {
+          failedSessions.push({
+            identifier: sessionPlaces[i].identifier,
+            startDate: sessionPlaces[i].startDate,
+          })
+        } else {
+          const session = new SessionPlace({
+            identifier: sessionPlaces[i].identifier,
+            _entity: req.station._entity,
+            startDate: sessionPlaces[i].startDate,
+            endDate: sessionPlaces[i].endDate,
+            createdAt: moment()
+          });
+          sessionsToSave.push(session.save());
+        }
       } else {
         failedSessions.push({
           identifier: sessionPlaces[i].identifier
@@ -89,7 +98,7 @@ route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // fa
   }
 })
 
-route.patch('/stationSessionPlace', authenticateStation, async (req, res) => {
+route.patch('/sessionPlace/station', authenticateStation, async (req, res) => {
   try {
     const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces;
     if (!sessionPlaces || !Array.isArray(sessionPlaces)) {

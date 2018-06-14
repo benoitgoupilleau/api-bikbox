@@ -30,7 +30,7 @@ SessionPlaceSchema.methods.toJSON = function () {
   return _.pick(sessionPlaceObject, ['_id', 'identifier', 'startDate', 'endDate'])
 };
 
-SessionPlaceSchema.index({ _sensor: 1, startDate: 1 }, { unique: true })
+SessionPlaceSchema.index({ identifier: 1, startDate: 1 }, { unique: true })
 
 const SessionPlace = mongoose.model('SessionPlace', SessionPlaceSchema)
 
