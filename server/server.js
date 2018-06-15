@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(Raven.errorHandler());
 }
 app.use(helmet());
-app.use(cors());
+app.use(cors({ exposedHeaders: 'x-auth'}));
 app.use(morgan(morganFormat, { stream: logger.stream }))
 app.use(bodyParser.json());
 app.use(router);

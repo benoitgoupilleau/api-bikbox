@@ -5,8 +5,7 @@ const moment = require('moment');
 
 const SessionPlace = require('./../models/sessionPlace');
 const Sensor = require('../models/sensor');
-const { authenticate, authenticateAdmin, authenticateEntityManager, authenticateStation } = require('./../middleware/authenticate');
-const constants = require('../constants');
+const { authenticate, authenticateAdmin, authenticateStation } = require('./../middleware/authenticate');
 
 const route = express.Router();
 
