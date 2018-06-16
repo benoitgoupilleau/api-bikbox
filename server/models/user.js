@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const constants = require('../constants');
 
 const UserSchema= new mongoose.Schema({
@@ -54,7 +54,7 @@ UserSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
 
-  return _.pick(userObject, ['_id', 'userType'])
+  return pick(userObject, ['_id', 'userType'])
 };
 
 // ok

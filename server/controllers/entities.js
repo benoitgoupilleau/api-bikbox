@@ -1,5 +1,5 @@
 const express = require('express');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
@@ -10,7 +10,7 @@ const constants = require('../constants');
 const route = express.Router();
 
 route.post('/entity/bikbox', knownInstance, (req, res) => {
-  const body = _.pick(req.body, ['name', 'description', 'createdAt']);
+  const body = pick(req.body, ['name', 'description', 'createdAt']);
   const entity = new Entity({
     name: body.name,
     description: body.description,
@@ -24,7 +24,7 @@ route.post('/entity/bikbox', knownInstance, (req, res) => {
 });
 
 route.post('/entity', authenticateAdmin, (req, res) => {
-  const body = _.pick(req.body, ['name', 'description', 'createdAt']);
+  const body = pick(req.body, ['name', 'description', 'createdAt']);
   const entity = new Entity({
     name: body.name,
     description: body.description,
@@ -89,7 +89,7 @@ route.delete('/entity/:id', authenticateAdmin, async (req, res) => {
 route.patch('/entity/:id', authenticateAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    const body = _.pick(req.body, ['name', 'description']);
+    const body = pick(req.body, ['name', 'description']);
 
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();

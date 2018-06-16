@@ -1,5 +1,5 @@
 const express = require('express');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
@@ -11,7 +11,7 @@ const route = express.Router();
 
 route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
   try {
-    const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces; // faire pour plusieurs capteurs
+    const sessionPlaces = pick(req.body, ['sessionPlaces']).sessionPlaces; // faire pour plusieurs capteurs
     if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
       throw 'No sessionPlaces array'
     }
@@ -80,7 +80,7 @@ route.get('/sessionPlaces/:id', authenticate, (req, res) => {
 route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // faire ensemble de session
   try {
     const id = req.params.id;
-    const body = _.pick(req.body, ['identifier', 'endDate']);
+    const body = pick(req.body, ['identifier', 'endDate']);
 
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();
@@ -99,7 +99,7 @@ route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // fa
 
 route.patch('/sessionPlace/station', authenticateStation, async (req, res) => {
   try {
-    const sessionPlaces = _.pick(req.body, ['sessionPlaces']).sessionPlaces;
+    const sessionPlaces = pick(req.body, ['sessionPlaces']).sessionPlaces;
     if (!sessionPlaces || !Array.isArray(sessionPlaces)) {
       throw 'No sessionPlaces array'
     }

@@ -1,5 +1,5 @@
 const express = require('express');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
@@ -10,7 +10,7 @@ const constants = require('../constants');
 const route = express.Router();
 
 route.post('/sessionBike', authenticateStation, (req, res) => {
-  const body = _.pick(req.body, ['_bike', 'startDate', 'endDate']);
+  const body = pick(req.body, ['_bike', 'startDate', 'endDate']);
   const sessionBike = new SessionBike({
     _bike: body._bike,
     startDate: body.startDate,
@@ -56,7 +56,7 @@ route.get('/sessionBike/:id', authenticate, (req, res) => {
 route.patch('/sessionBike/:id', authenticateAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    const body = _.pick(req.body, ['_bike', 'endDate']);
+    const body = pick(req.body, ['_bike', 'endDate']);
 
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();

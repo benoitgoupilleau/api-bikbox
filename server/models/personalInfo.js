@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const validator = require('validator');
 
 const PersonalInfoSchema = new mongoose.Schema({
@@ -37,7 +37,7 @@ PersonalInfoSchema.methods.toJSON = function () {
   const personalInfo = this;
   const personalInfoObject = personalInfo.toObject();
 
-  return _.pick(personalInfoObject, ['_id', 'email'])
+  return pick(personalInfoObject, ['_id', 'email'])
 };
 
 PersonalInfoSchema.methods.verifyEmailtoken = function (user) {

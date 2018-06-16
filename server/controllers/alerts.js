@@ -1,5 +1,5 @@
 const express = require('express');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
@@ -10,14 +10,13 @@ const constants = require('../constants');
 const route = express.Router();
 
 route.post('/alert', authenticateStation, (req, res) => {
-  const body = _.pick(req.body, ['name', 'description', '_sensor', 'createdAt']);
+  const body = pick(req.body, ['name', 'description', 'identifier', 'createdAt']);
   const alert = new Alert({
     name: body.name,
     description: body.description,
     _station: req.station._id,
     _entity: req.station._entity,
-    _sensor: body._sensor,
-    _user: body._user,
+    identifier: body.identifier,
     createdAt: moment(body.createdAt) && moment()
   })
   alert.save().then((doc) => {
@@ -56,7 +55,7 @@ route.get('/alert/:id', authenticateAdmin, (req, res) => {
 route.patch('/alert/:id', authenticateAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    const body = _.pick(req.body, ['name', 'description', '_sensor', 'status']);
+    const body = pick(req.body, ['name', 'description', 'identifier', 'status']);
 
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();

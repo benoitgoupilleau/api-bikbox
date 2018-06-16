@@ -1,5 +1,5 @@
 const express = require('express');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
@@ -10,7 +10,7 @@ const constants = require('../constants');
 const route = express.Router();
 
 route.post('/parking', authenticateAdmin, (req, res) => {
-  const body = _.pick(req.body, ['name', 'description', 'address', '_entity', 'createdAt']);
+  const body = pick(req.body, ['name', 'description', 'address', '_entity', 'createdAt']);
   console.log(body)
   const parking = new Parking({
     name: body.name,
@@ -76,7 +76,7 @@ route.delete('/parking/:id', authenticateAdmin, async (req, res) => {
 route.patch('/parking/:id', authenticateEntityManager, async (req, res) => {
   try {
     const id = req.params.id;
-    const body = _.pick(req.body, ['name', 'description', 'address', '_entity']);
+    const body = pick(req.body, ['name', 'description', 'address', '_entity']);
 
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();

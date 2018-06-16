@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
+const pick = require('lodash.pick');
 const constants = require('../constants');
 
 const AlertSchema = new mongoose.Schema({
@@ -33,12 +34,19 @@ const AlertSchema = new mongoose.Schema({
     required: true,
     ref: 'Entity'
   },
-  _sensor: {
-    type: mongoose.Schema.Types.ObjectId,
-    default: null,
+  identifier: {
+    type: String,
+    required: true,
     ref: 'Sensor'
   }
 });
+
+AlertSchema.methods.toJSON = function () {
+  const alert = this;
+  const alertObject = alert.toObject();
+
+  return pick(alertObject, ['_id', 'name', 'description', 'status', 'history', '_station', 'identifier', 'createdAt', 'lastUpdatedDate'])
+};
 
 AlertSchema.pre('save', function (next) {
   const alert = this;

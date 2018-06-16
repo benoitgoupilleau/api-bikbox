@@ -1,5 +1,5 @@
 const express = require('express');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
@@ -10,7 +10,7 @@ const constants = require('../constants');
 const route = express.Router();
 
 route.post('/sensor', authenticateAdmin, (req, res) => {
-  const body = _.pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', '_entity']);
+  const body = pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', '_entity']);
   const sensor = new Sensor({
     identifier: body.identifier,
     _station: body._station,
@@ -76,7 +76,7 @@ route.delete('/sensor/:id', authenticateAdmin, async (req, res) => {
 route.patch('/sensor/:id', authenticateAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    const body = _.pick(req.body, ['name', 'identifier', '_parking', 'firmwareVersion', 'voltage', 'lastChangedBattery']);
+    const body = pick(req.body, ['name', 'identifier', '_parking', 'firmwareVersion', 'voltage', 'lastChangedBattery']);
 
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();

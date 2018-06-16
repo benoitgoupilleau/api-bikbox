@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 
 const SessionPlaceSchema = new mongoose.Schema({
   identifier: {
@@ -27,7 +27,7 @@ SessionPlaceSchema.methods.toJSON = function () {
   const sessionPlace = this;
   const sessionPlaceObject = sessionPlace.toObject();
 
-  return _.pick(sessionPlaceObject, ['_id', 'identifier', 'startDate', 'endDate'])
+  return pick(sessionPlaceObject, ['_id', 'identifier', 'startDate', 'endDate'])
 };
 
 SessionPlaceSchema.index({ identifier: 1, startDate: 1 }, { unique: true })

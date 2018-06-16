@@ -1,6 +1,6 @@
 const express = require('express');
 const url = require('url');
-const _ = require('lodash');
+const pick = require('lodash.pick');
 const moment = require('moment');
 const generator = require('generate-password');
 
@@ -18,7 +18,7 @@ const route = express.Router();
 
 route.post('/adminusers/bikbox', knownInstance, async (req, res) => {
   try {
-    const body = _.pick(req.body, ['email', '_entity' ]);
+    const body = pick(req.body, ['email', '_entity' ]);
 
     const password = generator.generate({
       length: 8,
@@ -50,7 +50,7 @@ route.post('/adminusers/bikbox', knownInstance, async (req, res) => {
 // ok
 route.post('/adminusers', authenticateAdmin, async (req, res) => {
   try {
-    const body = _.pick(req.body, ['email', '_entity', 'userType']);
+    const body = pick(req.body, ['email', '_entity', 'userType']);
     
     const password = generator.generate({
       length: 8,
@@ -89,7 +89,7 @@ route.post('/adminusers', authenticateAdmin, async (req, res) => {
 // ok
 route.post('/adminusers/login', knownInstance, async (req, res) => {
   try {
-    const login = _.pick(req.body, ['email', 'password']);
+    const login = pick(req.body, ['email', 'password']);
     const personalInfo = await PersonalInfo.findByCredentials(login.email, login.password);
     const user = await User.findById(personalInfo._id)
     const token = await user.generateAuthToken();
@@ -112,7 +112,7 @@ route.delete('/adminusers/token', authenticate, async (req, res) => {
 // request for new password
 route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
   try {
-    const body = _.pick(req.body, ['email']);
+    const body = pick(req.body, ['email']);
     const personalInfo = await PersonalInfo.findOne({ email: body.email })
     if (!personalInfo) {
       return res.status(404).send();
@@ -162,7 +162,7 @@ route.get('/adminusers/resetpassword/:token', async (req, res) => {
 // finale route to save the new password
 route.post('/adminusers/resetpassword/:token', async (req, res) => {
   try {
-    const password = _.pick(req.body, ['password']).password;
+    const password = pick(req.body, ['password']).password;
     const user = await User.findOne({ 'resetPassword.token': req.params.token })
     if (!user) {
       return res.status(404).send('No user');
