@@ -20,6 +20,11 @@ const SessionBike = mongoose.model('SessionBike', {
     required: true,
     default: null
   },
+  active: {
+    type: Boolean,
+    required: true,
+    default: true
+  },
   createdAt: Number,
   lastUpdatedDate: Number
 });

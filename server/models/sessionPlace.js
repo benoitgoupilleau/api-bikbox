@@ -19,6 +19,11 @@ const SessionPlaceSchema = new mongoose.Schema({
   endDate: {
     type: Number
   },
+  active: {
+    type: Boolean,
+    required: true,
+    default: true
+  },
   createdAt: Number,
   lastUpdatedDate: Number
 });

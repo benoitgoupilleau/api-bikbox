@@ -5,7 +5,7 @@ const moment = require('moment');
 
 const SessionPlace = require('./../models/sessionPlace');
 const Sensor = require('../models/sensor');
-const { authenticate, authenticateAdmin, authenticateStation } = require('./../middleware/authenticate');
+const { authenticateEntityManager, authenticateAdmin, authenticateStation } = require('./../middleware/authenticate');
 
 const route = express.Router();
 
@@ -49,7 +49,7 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
   }
 });
 
-route.get('/sessionPlaces', authenticate, async (req, res) => {
+route.get('/sessionPlaces', authenticateEntityManager, async (req, res) => {
   try {
     const sessionPlaces = await SessionPlace.find({ active: true, _entity: { $in: req.user._entity } })
     res.send(sessionPlaces);
@@ -58,7 +58,7 @@ route.get('/sessionPlaces', authenticate, async (req, res) => {
   }
 });
 
-route.get('/sessionPlaces/:id', authenticate, (req, res) => {
+route.get('/sessionPlaces/:id', authenticateEntityManager, (req, res) => {
   const id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
