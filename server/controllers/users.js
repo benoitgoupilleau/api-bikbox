@@ -41,7 +41,6 @@ route.post('/adminusers/bikbox', knownInstance, async (req, res) => {
     }).save();
     res.status(200).send(user);
   } catch (e) {
-    console.log(e)
     res.status(400).send();
   }
 });
@@ -136,7 +135,6 @@ route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
 route.get('/adminusers/resetpassword/:token', async (req, res) => {
   try {
     const timeNow = moment();
-    console.log(timeNow)
     const user = await User.findOne({ 'resetPassword.token': req.params.token })
     if (!user) {
       return res.redirect(url.format({

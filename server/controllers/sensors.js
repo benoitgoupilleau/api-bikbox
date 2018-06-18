@@ -4,27 +4,30 @@ const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
 const Sensor = require('./../models/sensor');
+const Parking = require('./../models/parking');
 const { authenticate, authenticateAdmin, authenticateEntityManager } = require('./../middleware/authenticate');
-const constants = require('../constants');
 
 const route = express.Router();
 
-route.post('/sensor', authenticateAdmin, (req, res) => {
-  const body = pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', '_entity']);
-  const sensor = new Sensor({
-    identifier: body.identifier,
-    _station: body._station,
-    _entity: body._entity,
-    firmwareVersion: body.firmwareVersion,
-    voltage: body.voltage,
-    lastChangedBattery: body.lastChangedBattery,
-    createdAt: moment(body.createdAt) && moment()
-  })
-  sensor.save().then((doc) => {
-    res.send(doc);
-  }, (e) => {
+route.post('/sensor', authenticateAdmin, async (req, res) => {
+  try {
+    const body = pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', '_entity', '_parking']);
+    const sensor = new Sensor({
+      identifier: body.identifier,
+      _station: station._id,
+      _parking: body._parking,
+      _entity: body._entity,
+      firmwareVersion: body.firmwareVersion,
+      voltage: body.voltage,
+      lastChangedBattery: body.lastChangedBattery,
+      createdAt: moment(body.createdAt) && moment()
+    })
+    await sensor.save();
+    await Parking.findByIdAndUpdate(body._parking, { $inc: { nbSpot: 1 }})
+    res.send({sensor});
+  } catch (e) {
     res.status(400).send(e);
-  })
+  }
 });
 
 route.get('/sensors', authenticateEntityManager, async (req, res) => {
@@ -67,6 +70,7 @@ route.delete('/sensor/:id', authenticateAdmin, async (req, res) => {
     if (!sensor) {
       return res.status(404).send();
     }
+    await Parking.findByIdAndUpdate(body._parking, { $inc: { nbSpot: -1 } })
     res.status(200).send({ sensor });
   } catch (e) {
     res.status(400).send();

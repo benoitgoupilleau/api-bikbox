@@ -9,21 +9,22 @@ const constants = require('../constants');
 
 const route = express.Router();
 
-route.post('/alert', authenticateStation, (req, res) => {
-  const body = pick(req.body, ['name', 'description', 'identifier', 'createdAt']);
-  const alert = new Alert({
-    name: body.name,
-    description: body.description,
-    _station: req.station._id,
-    _entity: req.station._entity,
-    identifier: body.identifier,
-    createdAt: moment(body.createdAt) && moment()
-  })
-  alert.save().then((doc) => {
-    res.send(doc);
-  }, () => {
-    res.status(400).send();
-  })
+route.post('/alert/station', authenticateStation, async (req, res) => {
+  try {
+    const body = pick(req.body, ['name', 'description', 'identifier', 'createdAt']);
+    const alert = new Alert({
+      name: body.name,
+      description: body.description,
+      _station: req.station._id,
+      _entity: req.station._entity,
+      identifier: body.identifier,
+      createdAt: moment(body.createdAt) && moment()
+    })
+    await alert.save()
+    res.send({alert: pick(alert, ['_id', 'name', 'description', 'status', 'history', '_station', 'identifier', 'createdAt', 'lastUpdatedDate'])})
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 route.get('/alerts', authenticateAdmin, async (req, res) => {

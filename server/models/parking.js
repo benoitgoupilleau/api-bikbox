@@ -10,6 +10,10 @@ const Parking = mongoose.model('Parking', {
   },
   description: String,
   address: String,
+  nbSpot: {
+    type: Number,
+    default: 0
+  },
   _entity: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

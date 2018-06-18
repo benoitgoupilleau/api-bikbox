@@ -11,6 +11,11 @@ const Sensor = mongoose.model('Sensor', {
     required: true,
     ref: 'Station'
   },
+  _parking: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Parking'
+  },
   _entity: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

@@ -11,7 +11,6 @@ const route = express.Router();
 
 route.post('/parking', authenticateAdmin, (req, res) => {
   const body = pick(req.body, ['name', 'description', 'address', '_entity', 'createdAt']);
-  console.log(body)
   const parking = new Parking({
     name: body.name,
     description: body.description,
@@ -19,7 +18,6 @@ route.post('/parking', authenticateAdmin, (req, res) => {
     _entity: body._entity,
     createdAt: moment(body.createdAt) && moment()
   })
-  console.log(parking)
   parking.save().then((doc) => {
     res.send(doc);
   }).catch((e) => {

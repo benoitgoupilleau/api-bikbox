@@ -29,6 +29,7 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
         } else {
           const session = new SessionPlace({
             identifier: sessionPlaces[i].identifier,
+            _parking: req.station._parking,
             _entity: req.station._entity,
             startDate: sessionPlaces[i].startDate,
             endDate: sessionPlaces[i].endDate,
@@ -43,7 +44,7 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
       }
     }
     const sessions = await Promise.all(sessionsToSave)
-    res.status(200).send({ sessions, failedSessions });
+    res.status(200).send({ sessions: sessions.map((session) => pick(session, ['_id', 'identifier', 'startDate', 'endDate'])), failedSessions });
   } catch (err) {
     res.status(400).send(err);
   }
@@ -110,7 +111,7 @@ route.patch('/sessionPlace/station', authenticateStation, async (req, res) => {
       if (!sessionPlace) {
         failedSessions.push(sessionPlaces[i])
       }
-      sessions.push(sessionPlace);
+      sessions.push(pick(sessionPlace, ['_id', 'identifier', 'startDate', 'endDate']));
     }
     res.status(200).send({ sessions, failedSessions });
   } catch (err) {
