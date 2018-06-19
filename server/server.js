@@ -14,7 +14,7 @@ require('./db/mongoose.js');
 
 const port = process.env.PORT || 3000;
 
-const morganFormat = ':remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
+const morganFormat = '":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
 
 const app = express();
 if (process.env.NODE_ENV === 'production') {
