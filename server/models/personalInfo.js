@@ -57,22 +57,22 @@ PersonalInfoSchema.statics.findByCredentials = function (email, password) {
   const PersonalInfo = this;
   return PersonalInfo.findOne({ email }).then((personalInfo) => {
     if (!personalInfo) {
-      return Promise.reject(400);
+      return Promise.reject('No personalInfo');
     }
     return new Promise((resolve, reject) => {
       if (personalInfo.nbFalsePassword >= process.env.NB_FALSE_PASSWORD) {
-        reject(423);
+        reject({ message: 'Locked' });
       }
       bcrypt.compare(password, personalInfo.password, (err, result) => {
         if (err) {
-          reject(400);
+          reject({ message: 'Error bcrypt' });
         }
         if (result) {
           resolve(personalInfo);
         } else {
           personalInfo.nbFalsePassword++;
           personalInfo.save();
-          reject(401);
+          reject({ message: 'Wrong password' });
         };
       })
     })

@@ -7,6 +7,8 @@ const Sensor = require('./../models/sensor');
 const Parking = require('./../models/parking');
 const { authenticate, authenticateAdmin, authenticateEntityManager } = require('./../middleware/authenticate');
 
+const logger = require('../helpers/logger');
+
 const route = express.Router();
 
 route.post('/sensor', authenticateAdmin, async (req, res) => {
@@ -26,7 +28,8 @@ route.post('/sensor', authenticateAdmin, async (req, res) => {
     await Parking.findByIdAndUpdate(body._parking, { $inc: { nbSpot: 1 }})
     res.send({sensor});
   } catch (e) {
-    res.status(400).send(e);
+    logger.error(e);
+    res.status(400).send();
   }
 });
 
@@ -35,44 +38,41 @@ route.get('/sensors', authenticateEntityManager, async (req, res) => {
     const sensors = await Sensor.find({ active: true, _entity: { $in: req.user._entity } })
     res.send(sensors);
   } catch (e) {
-    res.status(400).send(e);
+    logger.error(e);
+    res.status(400).send();
   }
 });
 
-route.get('/sensor/:id', authenticate, (req, res) => {
-  const id = req.params.id;
+route.get('/sensor/:id', authenticate, async (req, res) => {
+  try {
+    const id = req.params.id;
 
-  if (!ObjectID.isValid(id)) {
-    return res.status(404).send();
-  }
-
-  Sensor.findOne({
-    _id: id,
-    active: true
-  }).then((sensor) => {
-    if (!sensor) {
+    if (!ObjectID.isValid(id)) {
       return res.status(404).send();
     }
+
+    const sensor = await Sensor.findOne({ _id: id, active: true });
+    if (!sensor) throw new Error('No sensor');
     res.send({ sensor });
-  }, () => {
+  } catch (error) {
+    logger.error(error);
     res.status(400).send();
-  })
+  }
 });
 
 route.delete('/sensor/:id', authenticateAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    if (!ObjectID.isValid(id)) {
-      return res.status(404).send();
-    }
+    if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
     const sensor = await Sensor.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment() } })
-    if (!sensor) {
-      return res.status(404).send();
-    }
+    if (!sensor) throw new Error('No sensor');
+
     await Parking.findByIdAndUpdate(body._parking, { $inc: { nbSpot: -1 } })
+    
     res.status(200).send({ sensor });
   } catch (e) {
+    logger.error(e);
     res.status(400).send();
   }
 });
@@ -82,17 +82,15 @@ route.patch('/sensor/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
     const body = pick(req.body, ['name', 'identifier', '_parking', 'firmwareVersion', 'voltage', 'lastChangedBattery']);
 
-    if (!ObjectID.isValid(id)) {
-      return res.status(404).send();
-    }
+    if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
     body.lastUpdatedDate = moment()
 
     const sensor = await Sensor.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
-    if (!sensor) {
-      throw new Error();
-    }
+    if (!sensor) throw new Error('No sensor');
+
     res.send({ sensor });
   } catch (e) {
+    logger.error(e);
     res.status(400).send();
   }
 })

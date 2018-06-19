@@ -4,26 +4,70 @@ const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
 const Alert = require('./../models/alert');
-const { authenticateStation, authenticateAdmin, authenticateEntityManager } = require('./../middleware/authenticate');
+const { authenticateStation, authenticateAdmin } = require('./../middleware/authenticate');
 const constants = require('../constants');
+
+const logger = require('../helpers/logger');
 
 const route = express.Router();
 
 route.post('/alert/station', authenticateStation, async (req, res) => {
   try {
-    const body = pick(req.body, ['name', 'description', 'identifier', 'createdAt']);
-    const alert = new Alert({
-      name: body.name,
-      description: body.description,
-      _station: req.station._id,
-      _entity: req.station._entity,
-      identifier: body.identifier,
-      createdAt: moment(body.createdAt) && moment()
-    })
-    await alert.save()
-    res.send({alert: pick(alert, ['_id', 'name', 'description', 'status', 'history', '_station', 'identifier', 'createdAt', 'lastUpdatedDate'])})
+    const alerts = pick(req.body, ['alerts']).alerts;
+    if (!alerts || !Array.isArray(alerts)) throw new Error('No alerts array');
+
+    const alertsToSave = [];
+    const failedAlerts = []
+    for (let i = 0; i < alerts.length; i += 1) {
+      const alert = await Alert.findOne({ identifier: sessionPlaces[i].identifier, name: sessionPlaces[i].name, createdAt: sessionPlaces[i].createdAt })
+
+      if (alert) {
+        failedAlerts.push({
+          identifier: sessionPlaces[i].identifier,
+          name: sessionPlaces[i].name,
+          createdAt: sessionPlaces[i].createdAt
+        })
+      } else {
+        if (sessionPlaces[i].alertType === constants.alertStatus[0]) {
+          const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
+          if (sensor) {
+            const alert = new Alert({
+              name: sessionPlaces[i].name,
+              description: sessionPlaces[i].description,
+              alertType: constants.alertStatus[0],
+              _parking: req.station._parking,
+              _entity: req.station._entity,
+              identifier: sessionPlaces[i].identifier,
+              createdAt: moment(sessionPlaces[i].createdAt) && moment()
+            })
+            alertsToSave.push(alert.save())
+          } else {
+            failedAlerts.push({
+              identifier: sessionPlaces[i].identifier,
+              name: sessionPlaces[i].name,
+              createdAt: sessionPlaces[i].createdAt
+            })
+          }
+        }
+        if (sessionPlaces[i].alertType === constants.alertStatus[1]) {
+          const alert = new Alert({
+            name: sessionPlaces[i].name,
+            description: sessionPlaces[i].description,
+            alertType: constants.alertStatus[1],
+            _parking: req.station._parking,
+            _station: req.station._id,
+            _entity: req.station._entity,
+            createdAt: moment(sessionPlaces[i].createdAt) && moment()
+          })
+          alertsToSave.push(alert.save())
+        }
+      }
+    }
+    const result = await Promise.all(alertsToSave)
+    res.send({alerts: pick(result, ['_id', 'name', 'description', 'status', 'history', '_station', 'identifier', 'createdAt', 'lastUpdatedDate', 'alertType'])})
   } catch (e) {
-    res.status(400).send(e);
+    logger.error(e)
+    res.status(400).send();
   }
 });
 
@@ -32,25 +76,25 @@ route.get('/alerts', authenticateAdmin, async (req, res) => {
     const alerts = await Alert.find({ _entity: { $in: req.user._entity } })
     res.send(alerts);
   } catch (e) {
-    res.status(400).send(e);
+    logger.error(e)
+    res.status(400).send();
   }
 });
 
-route.get('/alert/:id', authenticateAdmin, (req, res) => {
-  const id = req.params.id;
+route.get('/alert/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const id = req.params.id;
 
-  if (!ObjectID.isValid(id)) {
-    return res.status(404).send();
-  }
+    if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-  Alert.findOne({ _id: id }).then((alert) => {
-    if (!alert) {
-      return res.status(404).send();
-    }
+    const alert = await Alert.findOne({ _id: id })
+    if (!alert) throw new Error('No alert');
+
     res.send({ alert });
-  }, () => {
+  } catch (e) {
+    logger.error(e)
     res.status(400).send();
-  })
+  }
 });
 
 route.patch('/alert/:id', authenticateAdmin, async (req, res) => {
@@ -58,17 +102,16 @@ route.patch('/alert/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
     const body = pick(req.body, ['name', 'description', 'identifier', 'status']);
 
-    if (!ObjectID.isValid(id)) {
-      return res.status(404).send();
-    }
+    if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
+
     body.lastUpdatedDate = moment()
     
     const alert = await Alert.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
-    if (!alert) {
-      throw new Error();
-    }
+    if (!alert) throw new Error('No alert');
+
     res.send({ alert });
   } catch (e) {
+    logger.error(e)
     res.status(400).send();
   }
 })

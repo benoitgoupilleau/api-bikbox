@@ -26,8 +26,18 @@ const AlertSchema = new mongoose.Schema({
   }],
   _station: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
     ref: 'Station'
+  },
+  _parking: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Parking'
+  },
+  alertType: {
+    type: String,
+    required: true,
+    enum: constants.alertType,
+    default: constants.alertType[0],
   },
   _entity: {
     type: mongoose.Schema.Types.ObjectId,
@@ -36,7 +46,6 @@ const AlertSchema = new mongoose.Schema({
   },
   identifier: {
     type: String,
-    required: true,
     ref: 'Sensor'
   }
 });
@@ -58,6 +67,8 @@ AlertSchema.pre('save', function (next) {
     next();
   }
 });
+
+AlertSchema.index({ identifier: 1, name: 1, 'createdAt': 1 }, { unique: true });
 
 const Alert = mongoose.model('Alert', AlertSchema)
 

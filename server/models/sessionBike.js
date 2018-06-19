@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const SessionBike = mongoose.model('SessionBike', {
-  _bike: {
-    type: mongoose.Schema.Types.ObjectId,
+const SessionBikeSchema = new mongoose.Schema({
+  identifier: {
+    type: String,
     required: true,
     ref: 'Bike'
   },
@@ -10,6 +10,11 @@ const SessionBike = mongoose.model('SessionBike', {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'Entity'
+  },
+  _parking: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Parking'
   },
   startDate: {
     type: Number,
@@ -28,5 +33,9 @@ const SessionBike = mongoose.model('SessionBike', {
   createdAt: Number,
   lastUpdatedDate: Number
 });
+
+SessionBikeSchema.index({ identifier: 1, startDate: 1 }, { unique: true });
+
+const SessionBike = mongoose.model('SessionBike', SessionBikeSchema);
 
 module.exports=SessionBike;

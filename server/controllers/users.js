@@ -18,8 +18,10 @@ const route = express.Router();
 
 route.post('/adminusers/bikbox', knownInstance, async (req, res) => {
   try {
+    const users = await User.find({});
+    if (users.length > 0) throw new Error('Already one user')
+    
     const body = pick(req.body, ['email', '_entity' ]);
-
     const password = generator.generate({
       length: 8,
       numbers: true,
@@ -39,8 +41,9 @@ route.post('/adminusers/bikbox', knownInstance, async (req, res) => {
       userType: constants.userType[0],
       createdAt: moment()
     }).save();
-    res.status(200).send(user);
+    res.status(200).send({ user });
   } catch (e) {
+    logger.error(e);
     res.status(400).send();
   }
 });
@@ -81,6 +84,7 @@ route.post('/adminusers', authenticateAdmin, async (req, res) => {
     })
     return res.status(200).send(user)
   } catch (e) {
+    logger.error(e);
     res.status(400).send();
   }
 });
@@ -94,7 +98,15 @@ route.post('/adminusers/login', knownInstance, async (req, res) => {
     const token = await user.generateAuthToken();
     res.header({ 'x-auth': token }).send(user);
   } catch (e) {
-    res.status(e).send();
+    logger.error(e);
+    switch (e.message) {
+      case 'Locked':
+        return res.status(423).send();
+      case 'Wrong password':
+        return res.status(401).send();
+      default:
+        return res.status(400).send();
+    }
   }
 });
 
@@ -104,6 +116,7 @@ route.delete('/adminusers/token', authenticate, async (req, res) => {
     await req.user.removeToken(req.token)
     res.status(200).send();
   } catch (e) {
+    logger.error(e);
     res.status(400).send();
   }
 });
@@ -125,16 +138,16 @@ route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
       }
       logger.info(info);
     })
-    return res.status(200).send(user)
+    return res.status(200).send({ user })
   } catch (error) {
-    return res.status(400).send(error)
+    logger.error(error);
+    return res.status(400).send()
   }
 });
 
 // route to redirect to screen allowing to update the password
 route.get('/adminusers/resetpassword/:token', async (req, res) => {
   try {
-    const timeNow = moment();
     const user = await User.findOne({ 'resetPassword.token': req.params.token })
     if (!user) {
       return res.redirect(url.format({
@@ -150,6 +163,7 @@ route.get('/adminusers/resetpassword/:token', async (req, res) => {
     }
     return res.redirect(`${process.env.WEB_URL}/resetpassword/${req.params.token}`);
   } catch (e) {
+    logger.error(e);
     return res.redirect(url.format({
       pathname: `${process.env.WEB_URL}/notfound`,
       hash: 'badrequest',
@@ -162,16 +176,13 @@ route.post('/adminusers/resetpassword/:token', async (req, res) => {
   try {
     const password = pick(req.body, ['password']).password;
     const user = await User.findOne({ 'resetPassword.token': req.params.token })
-    if (!user) {
-      return res.status(404).send('No user');
-    }
-    if (moment(user.resetPassword.expiresIn) < moment()){
-      return res.status(404).send('Token has expired');
-    }
+    if (!user) throw new Error('No user')
+
+    if (moment(user.resetPassword.expiresIn) < moment()) throw new Error('Token has expired');
+    
     const personalInfo = await PersonalInfo.findById(user._id);
-    if (!personalInfo) {
-      return res.status(404).send('No info');
-    }
+    if (!personalInfo) throw new Error('No info');
+    
     user.resetPassword = {};
     personalInfo.password = password;
     await personalInfo.save();
@@ -183,8 +194,9 @@ route.post('/adminusers/resetpassword/:token', async (req, res) => {
       logger.info(info);
     })
     return res.status(200).send()
-  } catch (error) {
-    return res.status(400).send(error)
+  } catch (err) {
+    logger.error(err)
+    return res.status(400).send()
   }
 })
 
