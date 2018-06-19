@@ -1,7 +1,5 @@
 const Raven = require('raven');
-if (process.env.NODE_ENV === 'production') {
-  Raven.config(process.env.SENTRY_DSN).install();
-}
+Raven.config(process.env.SENTRY_DSN).install();
 
 const express = require('express');
 const helmet = require('helmet');
@@ -17,10 +15,8 @@ const port = process.env.PORT || 3000;
 const morganFormat = '":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
 
 const app = express();
-if (process.env.NODE_ENV === 'production') {
-  app.use(Raven.requestHandler());
-  app.use(Raven.errorHandler());
-}
+app.use(Raven.requestHandler());
+app.use(Raven.errorHandler());
 app.use(helmet());
 app.use(cors({ exposedHeaders: 'x-auth'}));
 app.use(morgan(morganFormat, { stream: logger.stream }))
