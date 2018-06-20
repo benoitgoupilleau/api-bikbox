@@ -64,7 +64,9 @@ route.post('/alert/station', authenticateStation, async (req, res) => {
       }
     }
     const result = await Promise.all(alertsToSave)
-    res.send({alerts: pick(result, ['_id', 'name', 'description', 'status', 'history', '_station', 'identifier', 'createdAt', 'lastUpdatedDate', 'alertType'])})
+    if (failedAlerts.length > 0) logger.warn('failedAlerts', JSON.stringify(failedAlerts))
+    // { alerts: pick(result, ['_id', 'name', 'description', 'status', 'identifier', 'createdAt', 'alertType']) }
+    res.status(200).send()
   } catch (e) {
     logger.error(e)
     res.status(400).send();
