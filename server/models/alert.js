@@ -61,7 +61,7 @@ AlertSchema.pre('save', function (next) {
   const alert = this;
 
   if (alert.isModified('status')) {
-    alert.history.push({status: alert.status, date: moment()});
+    alert.history.push({status: alert.status, date: moment().unix()});
     next();
   } else {
     next();

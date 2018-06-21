@@ -39,7 +39,7 @@ route.post('/adminusers/bikbox', knownInstance, async (req, res) => {
       _id: personalInfo._id,
       _entity: body._entity,
       userType: constants.userType[0],
-      createdAt: moment()
+      createdAt: moment().unix()
     }).save();
     res.status(200).send({ user });
   } catch (e) {
@@ -71,7 +71,7 @@ route.post('/adminusers', authenticateAdmin, async (req, res) => {
       _id: personalInfo._id,
       _entity: body._entity,
       userType: body.userType,
-      createdAt: moment()
+      createdAt: moment().unix()
     });
     
     const token = await user.generatePasswordToken()
@@ -95,8 +95,8 @@ route.post('/adminusers/login', knownInstance, async (req, res) => {
     const login = pick(req.body, ['email', 'password']);
     const personalInfo = await PersonalInfo.findByCredentials(login.email, login.password);
     const user = await User.findById(personalInfo._id)
-    const token = await user.generateAuthToken();
-    res.header({ 'x-auth': token }).send(user);
+    const { token, expiresIn } = await user.generateAuthToken();
+    res.header({ 'x-auth': token, 'x-auth-expire': expiresIn }).send(user);
   } catch (e) {
     logger.error(e);
     switch (e.message) {
@@ -155,7 +155,7 @@ route.get('/adminusers/resetpassword/:token', async (req, res) => {
         hash: 'nouser'
       }))
     }
-    if (moment(user.resetPassword.expiresIn) < moment()) {
+    if (user.resetPassword.expiresIn < moment().unix()) {
       return res.redirect(url.format({
         pathname: `${process.env.WEB_URL}/notfound`,
         hash: 'expired',
@@ -178,7 +178,7 @@ route.post('/adminusers/resetpassword/:token', async (req, res) => {
     const user = await User.findOne({ 'resetPassword.token': req.params.token })
     if (!user) throw new Error('No user')
 
-    if (moment(user.resetPassword.expiresIn) < moment()) throw new Error('Token has expired');
+    if (user.resetPassword.expiresIn < moment().unix()) throw new Error('Token has expired');
     
     const personalInfo = await PersonalInfo.findById(user._id);
     if (!personalInfo) throw new Error('No info');

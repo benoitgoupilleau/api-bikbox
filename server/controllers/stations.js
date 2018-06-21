@@ -21,7 +21,7 @@ route.post('/station', authenticateAdmin, async (req, res) => {
       firmwareVersion: body.firmwareVersion,
       voltage: body.voltage,
       lastChangedBattery: body.lastChangedBattery,
-      createdAt: moment(body.createdAt) && moment()
+      createdAt: body.createdAt && moment().unix()
     })
     await station.save();
     res.send({ station });
@@ -61,7 +61,7 @@ route.delete('/station/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    const station = await Station.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment() } })
+    const station = await Station.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment().unix() } })
     if (!station) throw new Error('No station');
 
     res.status(200).send({ station });
@@ -78,7 +78,7 @@ route.patch('/station/:id', authenticateAdmin, async (req, res) => {
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
     
-    body.lastUpdatedDate = moment()
+    body.lastUpdatedDate = moment().unix()
 
     const station = await Station.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
     if (!station) throw new Error('No station');

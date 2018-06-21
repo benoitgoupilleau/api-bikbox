@@ -18,9 +18,9 @@ route.post('/parking', authenticateAdmin, async (req, res) => {
       description: body.description,
       address: body.address,
       _entity: body._entity,
-      createdAt: moment(body.createdAt) && moment()
+      createdAt: body.createdAt && moment().unix()
     })
-    parking.save();
+    await parking.save();
     res.send({ parking });
   } catch (error) {
     logger.error(error);
@@ -59,7 +59,7 @@ route.delete('/parking/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    const parking = await Parking.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment() } })
+    const parking = await Parking.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment().unix() } })
     if (!parking) throw new Error('No parking');
 
     res.status(200).send({ parking });
@@ -76,7 +76,7 @@ route.patch('/parking/:id', authenticateEntityManager, async (req, res) => {
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    body.lastUpdatedDate = moment()
+    body.lastUpdatedDate = moment().unix()
 
     const parking = await Parking.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
     if (!parking) throw new Error('No parking');

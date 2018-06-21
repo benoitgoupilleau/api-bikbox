@@ -17,9 +17,9 @@ route.post('/bike', authenticateAdmin, async (req, res) => {
       identifier: body.identifier,
       _entity: body._entity,
       _user: body._user,
-      createdAt: moment(body.createdAt) && moment()
+      createdAt: body.createdAt && moment().unix()
     })
-    bike.save()
+    await bike.save()
     res.send({ bike });
   } catch (error) {
     logger.error(error);
@@ -58,7 +58,7 @@ route.delete('/bike/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    const bike = await Bike.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment() } })
+    const bike = await Bike.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment().unix() } })
     if (!bike) throw new Error('No bike');
 
     res.status(200).send({ bike });
@@ -75,7 +75,7 @@ route.patch('/bike/:id', authenticateAdmin, async (req, res) => {
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    body.lastUpdatedDate = moment()
+    body.lastUpdatedDate = moment().unix()
 
     const bike = await Bike.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
     if (!bike) throw new Error('No bike');

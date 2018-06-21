@@ -18,7 +18,7 @@ const app = express();
 app.use(Raven.requestHandler());
 app.use(Raven.errorHandler());
 app.use(helmet());
-app.use(cors({ exposedHeaders: 'x-auth'}));
+app.use(cors({ exposedHeaders: ['x-auth', 'x-auth-expire']}));
 app.use(morgan(morganFormat, { stream: logger.stream }))
 app.use(bodyParser.json());
 app.use(router);

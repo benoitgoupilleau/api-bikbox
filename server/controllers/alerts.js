@@ -38,7 +38,7 @@ route.post('/alert/station', authenticateStation, async (req, res) => {
               _parking: req.station._parking,
               _entity: req.station._entity,
               identifier: sessionPlaces[i].identifier,
-              createdAt: moment(sessionPlaces[i].createdAt) && moment()
+              createdAt: sessionPlaces[i].createdAt && moment().unix()
             })
             alertsToSave.push(alert.save())
           } else {
@@ -57,7 +57,7 @@ route.post('/alert/station', authenticateStation, async (req, res) => {
             _parking: req.station._parking,
             _station: req.station._id,
             _entity: req.station._entity,
-            createdAt: moment(sessionPlaces[i].createdAt) && moment()
+            createdAt: sessionPlaces[i].createdAt && moment().unix()
           })
           alertsToSave.push(alert.save())
         }
@@ -106,7 +106,7 @@ route.patch('/alert/:id', authenticateAdmin, async (req, res) => {
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    body.lastUpdatedDate = moment()
+    body.lastUpdatedDate = moment().unix()
     
     const alert = await Alert.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
     if (!alert) throw new Error('No alert');

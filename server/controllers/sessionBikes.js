@@ -35,7 +35,7 @@ route.post('/sessionBike/station', authenticateStation, async (req, res) => {
             _entity: req.station._entity,
             startDate: sessionBikes[i].startDate,
             endDate: sessionBikes[i].endDate,
-            createdAt: moment()
+            createdAt: moment().unix()
           });
           sessionsToSave.push(session.save());
         }
@@ -86,7 +86,7 @@ route.patch('/sessionBike/:id', authenticateAdmin, async (req, res) => {
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    body.lastUpdatedDate = moment()
+    body.lastUpdatedDate = moment().unix()
 
     const sessionBike = await SessionBike.findOneAndUpdate({ _id: id, identifier: body.identifier }, { $set: { endDate: body.endDate } }, { new: true })
     if (!sessionBike) {

@@ -32,7 +32,7 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
             _entity: req.station._entity,
             startDate: sessionPlaces[i].startDate,
             endDate: sessionPlaces[i].endDate,
-            createdAt: moment()
+            createdAt: moment().unix()
           });
           sessionsToSave.push(session.save());
         }
@@ -82,7 +82,7 @@ route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // fa
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    body.lastUpdatedDate = moment()
+    body.lastUpdatedDate = moment().unix()
 
     const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id, identifier: body.identifier }, { $set: { endDate: body.endDate } }, { new: true })
     if (!sessionPlace) {

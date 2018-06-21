@@ -63,7 +63,7 @@ PersonalInfoSchema.statics.findByCredentials = function (email, password) {
       if (personalInfo.nbFalsePassword >= process.env.NB_FALSE_PASSWORD) {
         reject({ message: 'Locked' });
       }
-      bcrypt.compare(password, personalInfo.password, (err, result) => {
+      bcrypt.compare(password, personalInfo.password, async (err, result) => {
         if (err) {
           reject({ message: 'Error bcrypt' });
         }
@@ -71,7 +71,7 @@ PersonalInfoSchema.statics.findByCredentials = function (email, password) {
           resolve(personalInfo);
         } else {
           personalInfo.nbFalsePassword++;
-          personalInfo.save();
+          await personalInfo.save();
           reject({ message: 'Wrong password' });
         };
       })

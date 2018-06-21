@@ -61,11 +61,12 @@ UserSchema.methods.toJSON = function () {
 UserSchema.methods.generateAuthToken = async function () {
   const user = this;
   const access = 'auth';
-  const token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.TOKEN_JWT_SECRET_TOKEN, { expiresIn: process.env.TOKEN_DURATION_TOKEN }).toString();
+  const expiresIn = moment().add(process.env.TOKEN_DURATION_TOKEN, 'd').unix()
+  const token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.TOKEN_JWT_SECRET_TOKEN, { expiresIn }).toString();
 
   user.tokens.push({ access, token });
   await user.save();
-  return token;
+  return { token, expiresIn };
 };
 
 // ok
@@ -90,7 +91,7 @@ UserSchema.methods.generatePasswordToken = async function () {
 
   user.resetPassword = {
     token,
-    expiresIn: moment().add(process.env.TOKEN_DURATION_PASSWORD, 'h')
+    expiresIn: moment().add(process.env.TOKEN_DURATION_PASSWORD, 'h').unix()
   };
 
   await user.save();

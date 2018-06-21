@@ -19,7 +19,7 @@ route.post('/entity/bikbox', knownInstance, async (req, res) => {
     const entity = new Entity({
       name: body.name,
       description: body.description,
-      createdAt: moment(body.createdAt) && moment()
+      createdAt: body.createdAt && moment().unix()
     })
     await entity.save();
     res.send({ entity });
@@ -35,9 +35,9 @@ route.post('/entity', authenticateAdmin, async (req, res) => {
     const entity = new Entity({
       name: body.name,
       description: body.description,
-      createdAt: moment(body.createdAt) && moment()
+      createdAt: body.createdAt && moment().unix()
     })
-    entity.save();
+    await entity.save();
     res.send({ entity });
   } catch (error) {
     logger.error(error);
@@ -79,7 +79,7 @@ route.delete('/entity/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    const entity = await Entity.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment() } })
+    const entity = await Entity.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment().unix() } })
     if (!entity) throw new Error('No entity');
 
     res.status(200).send({ entity });
@@ -96,7 +96,7 @@ route.patch('/entity/:id', authenticateAdmin, async (req, res) => {
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    body.lastUpdatedDate = moment()
+    body.lastUpdatedDate = moment().unix()
 
     const entity = await Entity.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
     if (!entity) throw new Error('No entity');

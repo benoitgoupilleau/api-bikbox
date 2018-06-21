@@ -22,7 +22,7 @@ route.post('/sensor', authenticateAdmin, async (req, res) => {
       firmwareVersion: body.firmwareVersion,
       voltage: body.voltage,
       lastChangedBattery: body.lastChangedBattery,
-      createdAt: moment(body.createdAt) && moment()
+      createdAt: body.createdAt && moment().unix()
     })
     await sensor.save();
     await Parking.findByIdAndUpdate(body._parking, { $inc: { nbSpot: 1 }})
@@ -65,7 +65,7 @@ route.delete('/sensor/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    const sensor = await Sensor.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment() } })
+    const sensor = await Sensor.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment().unix() } })
     if (!sensor) throw new Error('No sensor');
 
     await Parking.findByIdAndUpdate(body._parking, { $inc: { nbSpot: -1 } })
@@ -83,7 +83,7 @@ route.patch('/sensor/:id', authenticateAdmin, async (req, res) => {
     const body = pick(req.body, ['name', 'identifier', '_parking', 'firmwareVersion', 'voltage', 'lastChangedBattery']);
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
-    body.lastUpdatedDate = moment()
+    body.lastUpdatedDate = moment().unix()
 
     const sensor = await Sensor.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
     if (!sensor) throw new Error('No sensor');
