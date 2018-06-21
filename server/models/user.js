@@ -90,8 +90,9 @@ UserSchema.methods.generatePasswordToken = async function () {
 
   user.resetPassword = {
     token,
-    expiresIn: moment().add(process.env.TOKEN_DURATION_PASSWORD, 'hours')
+    expiresIn: moment().add(process.env.TOKEN_DURATION_PASSWORD, 'h')
   };
+
   await user.save();
   return token;
 };

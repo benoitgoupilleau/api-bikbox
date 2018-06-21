@@ -155,7 +155,7 @@ route.get('/adminusers/resetpassword/:token', async (req, res) => {
         hash: 'nouser'
       }))
     }
-    if (moment(user.resetPassword.expiresIn) > moment()) {
+    if (moment(user.resetPassword.expiresIn) < moment()) {
       return res.redirect(url.format({
         pathname: `${process.env.WEB_URL}/notfound`,
         hash: 'expired',
