@@ -4,6 +4,7 @@ const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
 const Alert = require('./../models/alert');
+const Sensor = require('./../models/sensor');
 const { authenticateStation, authenticateAdmin } = require('./../middleware/authenticate');
 const constants = require('../constants');
 
@@ -13,57 +14,59 @@ const route = express.Router();
 
 route.post('/alert/station', authenticateStation, async (req, res) => {
   try {
-    const alerts = pick(req.body, ['alerts']).alerts;
-    if (!alerts || !Array.isArray(alerts)) throw new Error('No alerts array');
+    const newAlerts = pick(req.body, ['alerts']).alerts;
+    if (!newAlerts || !Array.isArray(newAlerts)) throw new Error('No alerts array');
 
     const alertsToSave = [];
     const failedAlerts = []
-    for (let i = 0; i < alerts.length; i += 1) {
-      const alert = await Alert.findOne({ identifier: sessionPlaces[i].identifier, name: sessionPlaces[i].name, createdAt: sessionPlaces[i].createdAt })
+    for (let i = 0; i < newAlerts.length; i += 1) {
+      const alert = await Alert.findOne({ identifier: newAlerts[i].identifier, name: newAlerts[i].name, createdAt: newAlerts[i].createdAt })
 
       if (alert) {
         failedAlerts.push({
-          identifier: sessionPlaces[i].identifier,
-          name: sessionPlaces[i].name,
-          createdAt: sessionPlaces[i].createdAt
+          identifier: newAlerts[i].identifier,
+          name: newAlerts[i].name,
+          createdAt: newAlerts[i].createdAt
         })
       } else {
-        if (sessionPlaces[i].alertType === constants.alertStatus[0]) {
-          const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
+        if (newAlerts[i].alertType === constants.alertType[0]) {
+          const sensor = await Sensor.findOne({ identifier: newAlerts[i].identifier, _station: req.station._id })
           if (sensor) {
             const alert = new Alert({
-              name: sessionPlaces[i].name,
-              description: sessionPlaces[i].description,
-              alertType: constants.alertStatus[0],
+              name: newAlerts[i].name,
+              description: newAlerts[i].description,
+              alertType: constants.alertType[0],
               _parking: req.station._parking,
               _entity: req.station._entity,
-              identifier: sessionPlaces[i].identifier,
-              createdAt: sessionPlaces[i].createdAt && moment().unix()
+              _station: req.station._id,
+              identifier: newAlerts[i].identifier,
+              createdAt: newAlerts[i].createdAt && moment().unix()
             })
             alertsToSave.push(alert.save())
           } else {
             failedAlerts.push({
-              identifier: sessionPlaces[i].identifier,
-              name: sessionPlaces[i].name,
-              createdAt: sessionPlaces[i].createdAt
+              identifier: newAlerts[i].identifier,
+              name: newAlerts[i].name,
+              createdAt: newAlerts[i].createdAt
             })
           }
         }
-        if (sessionPlaces[i].alertType === constants.alertStatus[1]) {
+        if (newAlerts[i].alertType === constants.alertType[1]) {
           const alert = new Alert({
-            name: sessionPlaces[i].name,
-            description: sessionPlaces[i].description,
-            alertType: constants.alertStatus[1],
+            name: newAlerts[i].name,
+            description: newAlerts[i].description,
+            alertType: constants.alertType[1],
             _parking: req.station._parking,
             _station: req.station._id,
+            identifier: req.station.identifier,
             _entity: req.station._entity,
-            createdAt: sessionPlaces[i].createdAt && moment().unix()
+            createdAt: newAlerts[i].createdAt && moment().unix()
           })
           alertsToSave.push(alert.save())
         }
       }
     }
-    const result = await Promise.all(alertsToSave)
+    await Promise.all(alertsToSave)
     if (failedAlerts.length > 0) logger.warn('failedAlerts', JSON.stringify(failedAlerts))
     // { alerts: pick(result, ['_id', 'name', 'description', 'status', 'identifier', 'createdAt', 'alertType']) }
     res.status(200).send()

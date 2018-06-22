@@ -46,16 +46,10 @@ const AlertSchema = new mongoose.Schema({
   },
   identifier: {
     type: String,
-    ref: 'Sensor'
+    refPath: 'alertType',
+    required: true
   }
 });
-
-AlertSchema.methods.toJSON = function () {
-  const alert = this;
-  const alertObject = alert.toObject();
-
-  return pick(alertObject, ['_id', 'name', 'description', 'status', 'history', '_station', 'identifier', 'createdAt', 'lastUpdatedDate'])
-};
 
 AlertSchema.pre('save', function (next) {
   const alert = this;

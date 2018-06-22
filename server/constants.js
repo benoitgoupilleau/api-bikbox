@@ -1,6 +1,6 @@
 const constants = {
   userType: ['user', 'entityManager', 'admin'],
-  alertType: ['sensor', 'station'],
+  alertType: ['Sensor', 'Station'],
   alertStatus: ['opened', 'read', 'progress', 'closed']
 }
 
