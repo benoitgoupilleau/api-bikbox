@@ -4,6 +4,7 @@ const { ObjectID } = require('mongodb');
 const moment = require('moment');
 
 const Entity = require('./../models/entity');
+const User = require('./../models/user');
 const { authenticate, authenticateAdmin, authenticateEntityManager, knownInstance } = require('./../middleware/authenticate');
 const constants = require('../constants');
 
@@ -38,6 +39,7 @@ route.post('/entity', authenticateAdmin, async (req, res) => {
       createdAt: body.createdAt && moment().unix()
     })
     await entity.save();
+    await User.findByIdAndUpdate(req.user._id, { $push: { _entity: entity._id } })
     res.send({ entity });
   } catch (error) {
     logger.error(error);
