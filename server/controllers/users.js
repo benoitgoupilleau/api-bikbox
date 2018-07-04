@@ -145,6 +145,20 @@ route.post('/adminusers/resetpassword', knownInstance, async (req, res) => {
   }
 });
 
+route.patch('/adminusers/entity', authenticateAdmin, async (req, res) => {
+  const body = pick(req.body, ['userId', 'entityId'])
+  try {
+    if (!ObjectID.isValid(body.userId)) throw new Error('No user ObjectId');
+    if (!ObjectID.isValid(body.entityId)) throw new Error('No user ObjectId');
+
+    await User.findOneAndUpdate(body.userId, { $push: { _entity: body.entityId } })
+    return res.status(200).send()
+  } catch (error) {
+    logger.error(error);
+    return res.status(400).send()
+  }
+});
+
 // route to redirect to screen allowing to update the password
 route.get('/adminusers/resetpassword/:token', async (req, res) => {
   try {
