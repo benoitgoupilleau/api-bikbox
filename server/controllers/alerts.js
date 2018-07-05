@@ -22,12 +22,8 @@ route.post('/alert/station', authenticateStation, async (req, res) => {
     for (let i = 0; i < newAlerts.length; i += 1) {
       const alert = await Alert.findOne({ identifier: newAlerts[i].identifier, name: newAlerts[i].name, createdAt: newAlerts[i].createdAt })
 
-      if (alert) {
-        failedAlerts.push({
-          identifier: newAlerts[i].identifier,
-          name: newAlerts[i].name,
-          createdAt: newAlerts[i].createdAt
-        })
+      if (alert || !constants.alertType.includes(newAlerts[i].alertType)) {
+        failedAlerts.push(newAlerts[i])
       } else {
         if (newAlerts[i].alertType === constants.alertType[0]) {
           const sensor = await Sensor.findOne({ identifier: newAlerts[i].identifier, _station: req.station._id })
@@ -44,13 +40,9 @@ route.post('/alert/station', authenticateStation, async (req, res) => {
             })
             alertsToSave.push(alert.save())
           } else {
-            failedAlerts.push({
-              identifier: newAlerts[i].identifier,
-              name: newAlerts[i].name,
-              createdAt: newAlerts[i].createdAt
-            })
+            failedAlerts.push(newAlerts[i])
           }
-        }
+        } 
         if (newAlerts[i].alertType === constants.alertType[1]) {
           const alert = new Alert({
             name: newAlerts[i].name,
@@ -67,7 +59,7 @@ route.post('/alert/station', authenticateStation, async (req, res) => {
       }
     }
     await Promise.all(alertsToSave)
-    if (failedAlerts.length > 0) logger.warn('failedAlerts', JSON.stringify(failedAlerts))
+    if (failedAlerts.length > 0) logger.warn(`failedAlerts ${JSON.stringify(failedAlerts)}`)
     // { alerts: pick(result, ['_id', 'name', 'description', 'status', 'identifier', 'createdAt', 'alertType']) }
     res.status(200).send()
   } catch (e) {
