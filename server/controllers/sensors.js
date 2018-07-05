@@ -16,7 +16,7 @@ route.post('/sensor', authenticateAdmin, async (req, res) => {
     const body = pick(req.body, ['identifier', '_station', 'firmwareVersion', 'voltage', 'lastChangedBattery', 'createdAt', '_entity', '_parking']);
     const sensor = new Sensor({
       identifier: body.identifier,
-      _station: station._id,
+      _station: body._station,
       _parking: body._parking,
       _entity: body._entity,
       firmwareVersion: body.firmwareVersion,
