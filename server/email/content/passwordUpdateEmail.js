@@ -135,6 +135,7 @@ const passwordUpdateEmail = ()=>{
         </center>
       </body>
     </html>`
-)};
+  )
+};
 
 module.exports=passwordUpdateEmail;

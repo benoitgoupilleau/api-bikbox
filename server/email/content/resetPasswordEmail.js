@@ -145,6 +145,7 @@ const resetPasswordEmail = (url)=>{
         </center>
       </body>
     </html>`
-)};
+  )
+};
 
 module.exports=resetPasswordEmail;

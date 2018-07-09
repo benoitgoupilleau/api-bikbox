@@ -51,7 +51,7 @@ route.get('/entities', authenticateEntityManager, async (req, res) => {
   try {
     const entities = await Entity.find({ active: true });
     if (req.user.userType === constants.userType[1]) { // Only filter for non admin user
-      return res.send({ entities: entities.filter((entity) => user._entity.includes(entity._id)) })
+      return res.send({ entities: entities.filter((entity) => req.user._entity.includes(entity._id)) })
     }
     res.send(entities);
   } catch (error) {

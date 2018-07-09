@@ -68,7 +68,7 @@ route.delete('/sensor/:id', authenticateAdmin, async (req, res) => {
     const sensor = await Sensor.findByIdAndUpdate(id, { $set: { active : false, deleteDate: moment().unix() } })
     if (!sensor) throw new Error('No sensor');
 
-    await Parking.findByIdAndUpdate(body._parking, { $inc: { nbSpot: -1 } })
+    await Parking.findByIdAndUpdate(sensor._parking, { $inc: { nbSpot: -1 } })
     
     res.status(200).send({ sensor });
   } catch (e) {

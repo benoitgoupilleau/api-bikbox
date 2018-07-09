@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const pick = require('lodash.pick');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
+
+const { transporter, verifyNewEmailPayload } = require('./../email/mailconfig');
 
 const PersonalInfoSchema = new mongoose.Schema({
   email: {
@@ -40,16 +43,16 @@ PersonalInfoSchema.methods.toJSON = function () {
   return pick(personalInfoObject, ['_id', 'email'])
 };
 
-PersonalInfoSchema.methods.verifyEmailtoken = function (user) {
+PersonalInfoSchema.methods.verifyEmailtoken = function () {
   const personalInfo = this;
   const access = 'verifyemail';
   const token = jwt.sign({ _id: personalInfo._id.toHexString(), access }, process.env.TOKEN_JWT_SECRET_EMAIL, { expiresIn: process.env.TOKEN_DURATION_EMAIL }).toString()
   const url = `${process.env.API_URL}users/verify/${token}`;
-  transporter.sendMail(verifyEmail(personalInfo.email, url), (err, info) => {
+  transporter.sendMail(verifyNewEmailPayload(personalInfo.email, url), (err, info) => {
     if (err) {
       return Promise.reject(502);
     }
-    return Promise.resolve();
+    return Promise.resolve(info);
   })
 };
 
@@ -73,7 +76,7 @@ PersonalInfoSchema.statics.findByCredentials = function (email, password) {
           personalInfo.nbFalsePassword++;
           await personalInfo.save();
           reject({ message: 'Wrong password' });
-        };
+        }
       })
     })
   })

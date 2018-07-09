@@ -145,6 +145,7 @@ const welcomeEmail = (url)=>{
         </center>
       </body>
     </html>`
-)};
+  )
+};
 
 module.exports=welcomeEmail;

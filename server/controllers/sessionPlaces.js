@@ -7,6 +7,8 @@ const SessionPlace = require('./../models/sessionPlace');
 const Sensor = require('../models/sensor');
 const { authenticateEntityManager, authenticateAdmin, authenticateStation } = require('./../middleware/authenticate');
 
+const logger = require('../helpers/logger');
+
 const route = express.Router();
 
 route.post('/sessionPlace/station', authenticateStation, async (req, res) => {

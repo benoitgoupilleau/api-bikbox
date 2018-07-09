@@ -2,6 +2,7 @@ const express = require('express');
 const url = require('url');
 const pick = require('lodash.pick');
 const moment = require('moment');
+const { ObjectID } = require('mongodb');
 const generator = require('generate-password');
 
 const User = require('./../models/user');
@@ -100,12 +101,12 @@ route.post('/adminusers/login', knownInstance, async (req, res) => {
   } catch (e) {
     logger.error(e);
     switch (e.message) {
-      case 'Locked':
-        return res.status(423).send();
-      case 'Wrong password':
-        return res.status(401).send();
-      default:
-        return res.status(400).send();
+    case 'Locked':
+      return res.status(423).send();
+    case 'Wrong password':
+      return res.status(401).send();
+    default:
+      return res.status(400).send();
     }
   }
 });

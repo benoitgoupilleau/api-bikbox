@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const resetPasswordEmail = require('./content/resetPasswordEmail');
 const passwordUpdateEmail = require('./content/passwordUpdateEmail');
 const welcomeEmail = require('./content/welcomeEmail');
-// const verifyNewEmail = require('./content/verifyNewEmail');
+const verifyNewEmail = require('./content/verifyNewEmail');
 
 const transporter = nodemailer.createTransport({
   service: process.env.SMTP_SERVICE,
@@ -30,16 +30,17 @@ const welcomeEmailPayload = (email, url)=>{
   return mailOptions;
 }
 
-// const verifyNewEmailPayload = (user, url)=>{
-//   const mailOptions = {
-//     from: "Bik'box <do-not-reply@bikbox.com>", // sender address
-//     to: `${user.email}`, // list of receivers
-//     subject: 'Verify your new email address', // Subject line
-//     text: `Hello ${user.firstname},\n\nYour email address has been changed, please verify your email so we know it's still you:\n\n${url}\n\nIf you did not make this request or need additional assistance, please contact help@bikbox.com.\n\nBikbox Team`, // plain text body
-//     html: `${verifyNewEmail(user,url)}` // html body
-//   };
-//   return mailOptions;
-// }
+const verifyNewEmailPayload = (email, url)=>{
+  const mailOptions = {
+    from: "Bik'box <do-not-reply@bikbox.com>", // sender address
+    to: `${email}`, // list of receivers
+    subject: 'Votre adresse email a été modifiée', // Subject line
+    text: `Bonjour,\n\nVotre adresse email a été modifiée, merci de valider votre nouvelle adresse pour que nous soyons sûr que ce soit toujours vous :\n\n${url}\n\nSi vous n'êtes pas à l'origine de cette demande ou avez besoin d'aide, n'hésitez pas à nous contacter : bonjour@bikbox.com.\n\nL'équipe Bik'Box`, // plain text body
+    html: `${verifyNewEmail(url)}` // html body
+  };
+  return mailOptions;
+}
+
 const resetPasswordEmailPayload = (email, url)=>{
   const mailOptions = {
     from: "Bik'box <do-not-reply@bikbox.com>", // sender address
@@ -62,4 +63,4 @@ const passwordChangedEmailPayload = (email)=>{
   return mailOptions;
 }
 
-module.exports={ transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload };
+module.exports = { transporter, welcomeEmailPayload, resetPasswordEmailPayload, passwordChangedEmailPayload, verifyNewEmailPayload };

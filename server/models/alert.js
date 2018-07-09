@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
-const pick = require('lodash.pick');
 const constants = require('../constants');
 
 const AlertSchema = new mongoose.Schema({
