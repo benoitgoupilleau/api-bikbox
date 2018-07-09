@@ -148,4 +148,4 @@ const verifyNewEmail = (url)=>{
   )
 };
 
-module.exports=verifyNewEmail;
+module.exports = verifyNewEmail;
