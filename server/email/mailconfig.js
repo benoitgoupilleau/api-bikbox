@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const resetPasswordEmail = require('./content/resetPasswordEmail');
 const passwordUpdateEmail = require('./content/passwordUpdateEmail');
 const welcomeEmail = require('./content/welcomeEmail');
-const verifyNewEmail = require('./content/verifyNewEmail');
+const verifyNewEmail = require('./content/verifyChangedEmail');
 
 const transporter = nodemailer.createTransport({
   service: process.env.SMTP_SERVICE,
