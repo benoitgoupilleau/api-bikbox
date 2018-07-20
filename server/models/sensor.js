@@ -26,6 +26,11 @@ const Sensor = mongoose.model('Sensor', {
     type: Number,
     default: null
   },
+  hasSession: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   voltage: {
     type: String,
     default: null

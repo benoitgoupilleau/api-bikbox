@@ -18,6 +18,8 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
 
     const sessionsToSave = [];
     const failedSessions = []
+    const forcedClosedSession = [];
+    const sensorUpdated = []
     for (let i = 0; i < sessionPlaces.length; i += 1) {
       const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
       if (sensor) {
@@ -28,15 +30,32 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
             startDate: sessionPlaces[i].startDate,
           })
         } else {
-          const session = new SessionPlace({
-            identifier: sessionPlaces[i].identifier,
-            _parking: req.station._parking,
-            _entity: req.station._entity,
-            startDate: sessionPlaces[i].startDate,
-            endDate: sessionPlaces[i].endDate,
-            createdAt: moment().unix()
-          });
-          sessionsToSave.push(session.save());
+          if (sensor.hasSession) {
+            const session = new SessionPlace({
+              identifier: sessionPlaces[i].identifier,
+              _parking: req.station._parking,
+              _entity: req.station._entity,
+              startDate: sessionPlaces[i].startDate,
+              endDate: sessionPlaces[i].endDate,
+              createdAt: moment().unix()
+            });
+            sessionPlace.endDate = -999;
+            forcedClosedSession.push(sessionPlace.save());
+            sessionsToSave.push(session.save());
+          } else {
+            sensor.hasSession = true;
+            const session = new SessionPlace({
+              identifier: sessionPlaces[i].identifier,
+              _parking: req.station._parking,
+              _entity: req.station._entity,
+              startDate: sessionPlaces[i].startDate,
+              endDate: sessionPlaces[i].endDate,
+              createdAt: moment().unix()
+            });
+            sensorUpdated.push(sensor.save())
+            sessionsToSave.push(session.save());
+          }
+          
         }
       } else {
         failedSessions.push({
@@ -44,6 +63,8 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
         })
       }
     }
+    await Promise.all(forcedClosedSession);
+    await Promise.all(sensorUpdated);
     const sessions = await Promise.all(sessionsToSave)
     res.status(200).send({ sessions: sessions.map((session) => pick(session, ['_id', 'identifier', 'startDate', 'endDate'])), failedSessions });
   } catch (err) {
@@ -83,7 +104,7 @@ route.delete('/sessionPlaces/:id', authenticateAdmin, async (req, res) => {
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
-    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id }, { $set: { active: false } })
+    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id }, { $set: { active: false, deleteDate: moment().unix() } })
     if (!sessionPlace) throw new Error('No sessionPlace')
     res.send({ sessionPlace });
   } catch (error) {

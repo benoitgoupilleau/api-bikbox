@@ -29,7 +29,8 @@ const SessionPlaceSchema = new mongoose.Schema({
     default: true
   },
   createdAt: Number,
-  lastUpdatedDate: Number
+  lastUpdatedDate: Number,
+  deleteDate: Number
 });
 
 SessionPlaceSchema.index({ identifier: 1, startDate: 1 }, { unique: true })
