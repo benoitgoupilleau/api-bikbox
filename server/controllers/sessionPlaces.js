@@ -77,6 +77,21 @@ route.get('/sessionPlaces/:id', authenticateEntityManager, async (req, res) => {
   }
 });
 
+route.delete('/sessionPlaces/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
+
+    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id }, { $set: { active: false } })
+    if (!sessionPlace) throw new Error('No sessionPlace')
+    res.send({ sessionPlace });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).send();
+  }
+});
+
 route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // faire ensemble de session
   try {
     const id = req.params.id;
