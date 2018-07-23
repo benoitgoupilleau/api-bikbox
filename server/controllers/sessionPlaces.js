@@ -144,11 +144,21 @@ route.patch('/sessionPlace/station', authenticateStation, async (req, res) => {
     const sessions = []
     const failedSessions = []
     for (let i = 0; i < sessionPlaces.length; i += 1) {
-      const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: sessionPlaces[i]._id, identifier: sessionPlaces[i].identifier }, { $set: { endDate: sessionPlaces[i].endDate } }, { new: true })
-      if (!sessionPlace) {
+      const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
+      if (sensor) {
+        const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: sessionPlaces[i]._id, identifier: sessionPlaces[i].identifier }, { $set: { endDate: sessionPlaces[i].endDate } }, { new: true })
+        if (!sessionPlace) {
+          failedSessions.push(sessionPlaces[i])
+        } else {
+          if (sessionPlaces[i].endDate) {
+            sensor.hasSession = false;
+            await sensor.save();
+          }
+          sessions.push(pick(sessionPlace, ['_id', 'identifier', 'startDate', 'endDate']));
+        }
+      } else {
         failedSessions.push(sessionPlaces[i])
       }
-      sessions.push(pick(sessionPlace, ['_id', 'identifier', 'startDate', 'endDate']));
     }
     res.status(200).send({ sessions, failedSessions });
   } catch (err) {
