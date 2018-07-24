@@ -31,7 +31,7 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
           })
         } else {
           if (sensor.hasSession) {
-            // const currentSessions = await SessionPlace.find({ identifier: sessionPlaces[i].identifier })
+            const currentSessions = await SessionPlace.find({ identifier: sessionPlaces[i].identifier, endDate: null })
             const session = new SessionPlace({
               identifier: sessionPlaces[i].identifier,
               _parking: req.station._parking,
@@ -40,10 +40,10 @@ route.post('/sessionPlace/station', authenticateStation, async (req, res) => {
               endDate: sessionPlaces[i].endDate,
               createdAt: moment().unix()
             });
-            // for (let i = 0; i< currentSessions.length; i +=1) {
-            //   currentSessions[i].endDate = -999;
-            //   forcedClosedSession.push(currentSessions[i].save());
-            // }
+            for (let i = 0; i< currentSessions.length; i +=1) {
+              currentSessions[i].endDate = -999;
+              forcedClosedSession.push(currentSessions[i].save());
+            }
             sessionsToSave.push(session.save());
           } else {
             sensor.hasSession = true;
