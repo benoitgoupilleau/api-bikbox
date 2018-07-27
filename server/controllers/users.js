@@ -200,6 +200,7 @@ route.post('/adminusers/resetpassword/:token', async (req, res) => {
     
     user.resetPassword = {};
     personalInfo.password = password;
+    personalInfo.nbFalsePassword = 0;
     await personalInfo.save();
     await user.save();
     transporter.sendMail(passwordChangedEmailPayload(personalInfo.email), (err, info) => {
