@@ -119,13 +119,13 @@ route.delete('/sessionPlaces/:id', authenticateAdmin, async (req, res) => {
 route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // faire ensemble de session
   try {
     const id = req.params.id;
-    const body = pick(req.body, ['identifier', 'endDate']);
+    const body = pick(req.body, ['endDate']);
 
     if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
 
     body.lastUpdatedDate = moment().unix()
 
-    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id, identifier: body.identifier }, { $set: { endDate: body.endDate } }, { new: true })
+    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id }, { $set: { endDate: body.endDate } }, { new: true })
     if (!sessionPlace) {
       throw new Error();
     }
