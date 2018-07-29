@@ -86,6 +86,16 @@ route.get('/sessionPlaces', authenticateEntityManager, async (req, res) => {
   }
 });
 
+route.get('/sessionPlaces/inactive', authenticateEntityManager, async (req, res) => {
+  try {
+    const sessionPlaces = await SessionPlace.find({ active: false, _entity: { $in: req.user._entity } })
+    res.send(sessionPlaces);
+  } catch (e) {
+    logger.error(e)
+    res.status(400).send();
+  }
+});
+
 route.get('/sessionPlaces/:id', authenticateEntityManager, async (req, res) => {
   try {
     const id = req.params.id;
@@ -116,6 +126,21 @@ route.delete('/sessionPlaces/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
+route.put('/sessionPlaces/inactive/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    if (!ObjectID.isValid(id)) throw new Error('No ObjectId');
+
+    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id }, { $set: { active: true, lastUpdatedDate: moment().unix() } })
+    if (!sessionPlace) throw new Error('No sessionPlace')
+    res.send({ sessionPlace });
+  } catch (error) {
+    logger.error(error);
+    res.status(400).send();
+  }
+});
+
 route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // faire ensemble de session
   try {
     const id = req.params.id;
@@ -125,7 +150,7 @@ route.patch('/sessionPlaces/:id', authenticateAdmin, async (req, res) => { // fa
 
     body.lastUpdatedDate = moment().unix()
 
-    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id }, { $set: { endDate: body.endDate } }, { new: true })
+    const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: id }, { $set: { endDate: body.endDate, lastUpdatedDate: moment().unix() } }, { new: true })
     if (!sessionPlace) {
       throw new Error();
     }
@@ -146,7 +171,7 @@ route.patch('/sessionPlace/station', authenticateStation, async (req, res) => {
     for (let i = 0; i < sessionPlaces.length; i += 1) {
       const sensor = await Sensor.findOne({ identifier: sessionPlaces[i].identifier, _station: req.station._id })
       if (sensor) {
-        const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: sessionPlaces[i]._id, identifier: sessionPlaces[i].identifier }, { $set: { endDate: sessionPlaces[i].endDate } }, { new: true })
+        const sessionPlace = await SessionPlace.findOneAndUpdate({ _id: sessionPlaces[i]._id, identifier: sessionPlaces[i].identifier }, { $set: { endDate: sessionPlaces[i].endDate, lastUpdatedDate: moment().unix() } }, { new: true })
         if (!sessionPlace) {
           failedSessions.push(sessionPlaces[i])
         } else {
