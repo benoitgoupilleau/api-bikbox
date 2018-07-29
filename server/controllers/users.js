@@ -101,12 +101,12 @@ route.post('/adminusers/login', knownInstance, async (req, res) => {
   } catch (e) {
     logger.error(e);
     switch (e.message) {
-    case 'Locked':
-      return res.status(423).send();
-    case 'Wrong password':
-      return res.status(401).send();
-    default:
-      return res.status(400).send();
+      case 'Locked':
+        return res.status(423).send();
+      case 'Wrong password':
+        return res.status(401).send();
+      default:
+        return res.status(400).send();
     }
   }
 });
