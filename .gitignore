@@ -5,3 +5,4 @@ API.sh
 lib/
 logs/combined.log
 logs/error.log
+yarn.lock
