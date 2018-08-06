@@ -6,3 +6,4 @@ lib/
 logs/combined.log
 logs/error.log
 yarn.lock
+yarn-error.log
