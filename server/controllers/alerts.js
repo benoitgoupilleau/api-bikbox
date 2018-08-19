@@ -70,7 +70,7 @@ route.post('/alert/station', authenticateStation, async (req, res) => {
 
 route.get('/alerts', authenticateAdmin, async (req, res) => {
   try {
-    const alerts = await Alert.find({ _entity: { $in: req.user._entity } })
+    const alerts = await Alert.find({ _entity: { $in: req.user._entity }, status: { $ne: 'closed'} })
     res.send(alerts);
   } catch (e) {
     logger.error(e)
@@ -103,8 +103,15 @@ route.patch('/alert/:id', authenticateAdmin, async (req, res) => {
 
     body.lastUpdatedDate = moment().unix()
     
-    const alert = await Alert.findOneAndUpdate({ _id: id, active: true }, { $set: body }, { new: true })
+    const alert = await Alert.findOne({ _id: id})
     if (!alert) throw new Error('No alert');
+
+    if (body.status && constants.alertStatus.includes(body.status) && body.status !== alert.status) alert.status = body.status;
+    if (body.name && body.name !== '' && body.name !== alert.name) alert.name = body.name;
+    if (body.description && body.description !== '' && body.description !== alert.description) alert.description = body.description;
+    if (body.identifier && body.identifier !== '' && body.identifier !== alert.identifier) alert.identifier = body.identifier;
+
+    await alert.save();
 
     res.send({ alert });
   } catch (e) {
