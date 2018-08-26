@@ -95,7 +95,7 @@ route.post('/adminusers/login', knownInstance, async (req, res) => {
   try {
     const login = pick(req.body, ['email', 'password']);
     const personalInfo = await PersonalInfo.findByCredentials(login.email, login.password);
-    const user = await User.findById(personalInfo._id)
+    const user = await User.findById(personalInfo._id).populate({model: 'Entity', path: '_entity'})
     const { token, expiresIn } = await user.generateAuthToken();
     res.header({ 'x-auth': token, 'x-auth-expire': expiresIn }).send(user);
   } catch (e) {

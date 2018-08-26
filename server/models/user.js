@@ -54,7 +54,7 @@ UserSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
 
-  return pick(userObject, ['_id', 'userType'])
+  return pick(userObject, ['_id', 'userType', '_entity'])
 };
 
 // ok
