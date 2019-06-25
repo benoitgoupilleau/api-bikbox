@@ -1,5 +1,4 @@
 const { createLogger, format, transports } = require('winston');
-require('winston-mongodb');
 
 const { combine, timestamp, label, printf } = format;
 
@@ -19,9 +18,7 @@ const logger = createLogger({
   transports: [
     new transports.Console({ colorize: true }),
     new transports.File({ filename: 'logs/error.log', level: 'error', colorize: true, json: true }),
-    new transports.File({ filename: 'logs/combined.log', colorize: true, json: true }),
-    new transports.MongoDB({ name: 'errorLogs', db: process.env.MONGOLAB_SILVER_URI, level: 'error', collection: 'errorLog'}),
-    new transports.MongoDB({ name: 'combinedLogs', db: process.env.MONGOLAB_SILVER_URI, collection: 'combinedLog' })
+    new transports.File({ filename: 'logs/combined.log', colorize: true, json: true })
   ],
   exitOnError: false,
 });

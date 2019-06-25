@@ -23,6 +23,10 @@ app.use(morgan(morganFormat, { stream: logger.stream }))
 app.use(bodyParser.json());
 app.use(router);
 
+app.get('/healthcheck', (req, res)  => {
+  res.send('Healthy')
+})
+
 app.listen(port, () => {
   logger.info(`Server running on port ${port}`)
 });

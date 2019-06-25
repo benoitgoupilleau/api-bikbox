@@ -1,0 +1,61 @@
+version: '3.4'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=root
+    #   - MONGO_INITDB_ROOT_PASSWORD=example
+    #   - MONGO_INITDB_DATABASE=example-database
+    # # healthcheck:
+    # #   test: echo 'db.stats().ok' | mongo host.docker.internal:27017/example-database --quiet
+    # #   interval: 5s
+    # #   start_period: 10s
+    # #   timeout: 4s
+    # #   retries: 3
+    volumes:
+      - ./dbapi:/data/db
+  
+  api:
+    build:
+      context: .
+      args:
+        - NODE_ENV=development
+    ports:
+      - 3002:3002
+    command: /nodeapp/node_modules/.bin/nodemon --exec node /nodeapp/server/server.js
+    volumes:
+      - .:/nodeapp:delegated
+      - ./package.json:/nodeapp/package.json
+      - ./logs:/nodeapp/logs
+    environment:
+      - PORT=3002
+      - MONGODB_URI="mongodb://mongo:27017/Bikbox"
+      - MONGOLAB_SILVER_URI="mongodb://mongo:27017/Bikbox_log"
+      - TOKEN_SALT_ROUNDS=10
+      - TOKEN_JWT_SECRET_TOKEN=aiojdefegrVHDAZAZuieqsmajzdjscldsjeof2132zd
+      - TOKEN_DURATION_TOKEN=7
+      - TOKEN_JWT_SECRET_EMAIL=evreuoezu137826dfhvefiefDNBEZrer32
+      - TOKEN_DURATION_EMAIL=48h
+      - TOKEN_JWT_SECRET_PASSWORD=iorgup12334GVDAZDdkvhecfuvmzeodjer344
+      - TOKEN_DURATION_PASSWORD=24
+      - NB_FALSE_PASSWORD=2
+      - API_URL=http://host.docker.internal:3002
+      - WEB_URL=http://host.docker.internal:3000
+      - SMTP_SERVICE=smtp.gmail.com
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=465
+      - SMTP_SECURE=true
+      - SMTP_AUTH_USER=tech.bikbox@gmail.com
+      - SMTP_AUTH_PASSWORD=MonkeyBear
+      - SMTP_STARTTLS=true
+      - SMTP_SECURE_CONNECTION=true
+      - X_KEY=zdfkjeofhsldfjzbljfjzehlifhzehxvndjk4567JHGDEZds!zdfk
+      - SENTRY_DSN=https://6e140791081c4795a79e159472337a4f@sentry.io/1229146
+    depends_on:
+      - mongo
+    healthcheck:
+      disable: true
+    
